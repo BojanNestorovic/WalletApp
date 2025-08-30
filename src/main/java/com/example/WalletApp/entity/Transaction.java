@@ -46,8 +46,77 @@ public class Transaction {
     @Column
     private Consistency consistency;
 
+    //getters and setters
 
+    public Long getId() {
+        return id;
+    }
 
+    public String getName() {
+        return name;
+    }
 
+    public double getAmount() {
+        return amount;
+    }
 
+    public TransactionType getType() {
+        return type;
+    }
+
+    public Date getDateOfTransaction() {
+        return dateOfTransaction;
+    }
+
+    public boolean isRepeating() {
+        return repeating;
+    }
+
+    public Wallet getWallet() {
+        return wallet;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Consistency getCosnsistency() {
+        return consistency;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public void setType(TransactionType type) {
+        this.type = type;
+    }
+
+    public void setDateOfTransaction(Date dateOfTransaction) {
+        this.dateOfTransaction = dateOfTransaction;
+    }
+
+    public void setRepeating(boolean repeating) {
+        this.repeating = repeating;
+    }
+
+    public void setWallet(Wallet wallet) {
+        this.wallet = wallet;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setConsistency(Consistency consistency) {
+        this.consistency = consistency;
+    }
 }

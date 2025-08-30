@@ -18,8 +18,7 @@ public class Wallet {
     @Column
     private Long currentState;
 
-    @OneToOne(mappedBy = "currency",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Currency currency;
+
 
     @Column
     private Date dateOfCreation;
@@ -32,7 +31,10 @@ public class Wallet {
     @OneToMany(mappedBy = "wallet", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Transaction> transactions = new HashSet<>();
 
-    //link to
+    //link to currency.java
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Currency currency;
 
     @Column
     private boolean savingsAccount;

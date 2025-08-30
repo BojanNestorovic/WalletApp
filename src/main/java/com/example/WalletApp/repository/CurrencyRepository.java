@@ -1,0 +1,10 @@
+package com.example.WalletApp.repository;
+
+import com.example.WalletApp.entity.Currency;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface CurrencyRepository extends JpaRepository<Currency, Long> {
+
+}

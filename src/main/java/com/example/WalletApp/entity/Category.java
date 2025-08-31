@@ -1,32 +1,35 @@
 package com.example.WalletApp.entity;
 
-
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
-enum CategoryType{
-
-    Income, Expense
-
-}
 @Entity
+@Table(name = "categories")
 public class Category {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
     private String name;
+    
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CategoryType type;
+    
     @Column(nullable = false)
-    private boolean predefined;
+    private boolean predefined = false;
 
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "id", nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
-    //constructors, getters and setters
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    private Set<Transaction> transactions = new HashSet<>();
 
+    // Constructors
     public Category() {}
 
     public Category(String name, CategoryType type, boolean predefined, User user) {
@@ -36,7 +39,13 @@ public class Category {
         this.user = user;
     }
 
-    // === Getters and Setters ===
+    public Category(String name, CategoryType type, boolean predefined) {
+        this.name = name;
+        this.type = type;
+        this.predefined = predefined;
+    }
+
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -52,6 +61,22 @@ public class Category {
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
 
+    public Set<Transaction> getTransactions() { return transactions; }
+    public void setTransactions(Set<Transaction> transactions) { this.transactions = transactions; }
 
+    // Helper methods
+    public void addTransaction(Transaction transaction) {
+        transactions.add(transaction);
+        transaction.setCategory(this);
+    }
 
+    public void removeTransaction(Transaction transaction) {
+        transactions.remove(transaction);
+        transaction.setCategory(null);
+    }
+}
+
+// Enum definition
+enum CategoryType {
+    INCOME, EXPENSE
 }

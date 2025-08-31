@@ -1,0 +1,13 @@
+/home/vuk/Downloads/WalletApp/src/main/java/com/example/WalletApp/repository/TransactionRepository.java
+/home/vuk/Downloads/WalletApp/src/main/java/com/example/WalletApp/DemoAplication.java
+/home/vuk/Downloads/WalletApp/src/main/java/com/example/WalletApp/entity/Wallet.java
+/home/vuk/Downloads/WalletApp/src/main/java/com/example/WalletApp/repository/CurrencyRepository.java
+/home/vuk/Downloads/WalletApp/src/main/java/com/example/WalletApp/entity/Transaction.java
+/home/vuk/Downloads/WalletApp/src/main/java/com/example/WalletApp/repository/SavingsGoalRepository.java
+/home/vuk/Downloads/WalletApp/src/main/java/com/example/WalletApp/entity/User.java
+/home/vuk/Downloads/WalletApp/src/main/java/com/example/WalletApp/repository/CategoryRepository.java
+/home/vuk/Downloads/WalletApp/src/main/java/com/example/WalletApp/entity/Currency.java
+/home/vuk/Downloads/WalletApp/src/main/java/com/example/WalletApp/repository/UserRepository.java
+/home/vuk/Downloads/WalletApp/src/main/java/com/example/WalletApp/repository/WalletRepository.java
+/home/vuk/Downloads/WalletApp/src/main/java/com/example/WalletApp/entity/SavingsGoal.java
+/home/vuk/Downloads/WalletApp/src/main/java/com/example/WalletApp/entity/Category.java

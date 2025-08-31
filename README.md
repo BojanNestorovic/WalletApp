@@ -42,12 +42,37 @@ Aplikacija omogućava korisnicima praćenje prihoda, rashoda, postavljanje cilje
 ## Tehnologije
 | Deo | Tehnologije |
 |-----|-------------|
-| **Backend** | Java, Spring Boot, Spring Security, Spring Data JPA |
+| **Backend** | Java 11, Spring Boot 2.7.18, Spring Security, Spring Data JPA |
 | **Frontend** | HTML, CSS, JavaScript, Vue.js |
-| **Baza podataka** | MySQL ili PostgreSQL |
+| **Baza podataka** | MySQL 8.0 |
 | **Dodatne biblioteke** | Chart.js (grafikoni), Axios (HTTP pozivi), Bootstrap (UI) |
 | **Autentifikacija** | JWT tokeni |
-| **Valute** | Podrška za RSD, EUR, USD i druge sa konverzijom |
+| **Valute** | Podrška za RSD, EUR, USD, GBP, CHF sa konverzijom |
+
+---
+## Prva Kontrolna Tačka - Model Podataka
+
+### Implementirani Entiteti:
+1. **User** - Korisnik sa svim potrebnim atributima i vezama
+2. **Currency** - Valuta sa kursom u odnosu na EUR
+3. **Wallet** - Novčanik sa početnim i trenutnim stanjem
+4. **Category** - Kategorija transakcija (prihod/trošak)
+5. **Transaction** - Transakcija sa svim potrebnim detaljima
+6. **SavingsGoal** - Cilj štednje sa praćenjem napretka
+
+### Repository Sloj:
+- UserRepository
+- CurrencyRepository  
+- WalletRepository
+- CategoryRepository
+- TransactionRepository
+- SavingsGoalRepository
+
+### Konfiguracija:
+- Maven projekat sa Spring Boot 2.7.18
+- MySQL baza podataka
+- JPA/Hibernate za ORM
+- Inicijalni podaci (valute i predefinisane kategorije)
 
 ---
 

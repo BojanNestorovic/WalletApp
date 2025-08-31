@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lični Finansijski Menadžer - Model Podataka</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .entity-card {
+            border-left: 4px solid #007bff;
+            margin-bottom: 20px;
+        }
+        .relationship-line {
+            border-left: 2px dashed #6c757d;
+            margin-left: 20px;
+            padding-left: 20px;
+        }
+        .enum-badge {
+            background-color: #28a745;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center mb-4">Lični Finansijski Menadžer</h1>
+                <h2 class="text-center mb-4 text-muted">Model Podataka - Prva Kontrolna Tačka</h2>
+                
+                <div class="alert alert-info">
+                    <strong>Opis projekta:</strong> Veb aplikacija za praćenje ličnih finansija sa podrškom za novčanike, transakcije, kategorije, ciljeve štednje i statistiku.
+                </div>
+
+                <h3 class="mt-4 mb-3">Entiteti i Veze</h3>
+
+                <!-- User Entity -->
+                <div class="card entity-card">
+                    <div class="card-header">
+                        <h4>👤 Korisnik (User)</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Atributi:</h5>
+                                <ul>
+                                    <li><strong>id</strong> - Long (Primary Key)</li>
+                                    <li><strong>firstName</strong> - String (not null)</li>
+                                    <li><strong>lastName</strong> - String (not null)</li>
+                                    <li><strong>username</strong> - String (unique, not null)</li>
+                                    <li><strong>email</strong> - String (unique, not null)</li>
+                                    <li><strong>password</strong> - String (not null, heširana)</li>
+                                    <li><strong>birthDate</strong> - Date (not null)</li>
+                                    <li><strong>role</strong> - <span class="enum-badge">USER/ADMINISTRATOR</span></li>
+                                    <li><strong>imageLink</strong> - String (putanja do slike)</li>
+                                    <li><strong>dateOfRegistration</strong> - Date (not null)</li>
+                                    <li><strong>blocked</strong> - boolean (not null)</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Veze:</h5>
+                                <ul>
+                                    <li><strong>currency</strong> → Currency (Many-to-One)</li>
+                                    <li><strong>wallets</strong> → Wallet (One-to-Many)</li>
+                                    <li><strong>transactions</strong> → Transaction (One-to-Many)</li>
+                                    <li><strong>categories</strong> → Category (One-to-Many)</li>
+                                    <li><strong>savingsGoals</strong> → SavingsGoal (One-to-Many)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Currency Entity -->
+                <div class="card entity-card">
+                    <div class="card-header">
+                        <h4>💰 Valuta (Currency)</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Atributi:</h5>
+                                <ul>
+                                    <li><strong>id</strong> - Long (Primary Key)</li>
+                                    <li><strong>name</strong> - String (unique, not null)</li>
+                                    <li><strong>valueToEur</strong> - Double (not null)</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Veze:</h5>
+                                <ul>
+                                    <li><strong>users</strong> → User (One-to-Many)</li>
+                                    <li><strong>wallets</strong> → Wallet (One-to-Many)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wallet Entity -->
+                <div class="card entity-card">
+                    <div class="card-header">
+                        <h4>💼 Novčanik (Wallet)</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Atributi:</h5>
+                                <ul>
+                                    <li><strong>id</strong> - Long (Primary Key)</li>
+                                    <li><strong>name</strong> - String (not null)</li>
+                                    <li><strong>initialBalance</strong> - BigDecimal (not null)</li>
+                                    <li><strong>currentBalance</strong> - BigDecimal (not null)</li>
+                                    <li><strong>dateOfCreation</strong> - Date (not null)</li>
+                                    <li><strong>savings</strong> - boolean (not null)</li>
+                                    <li><strong>archived</strong> - boolean (not null)</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Veze:</h5>
+                                <ul>
+                                    <li><strong>user</strong> → User (Many-to-One)</li>
+                                    <li><strong>currency</strong> → Currency (Many-to-One)</li>
+                                    <li><strong>transactions</strong> → Transaction (One-to-Many)</li>
+                                    <li><strong>savingsGoals</strong> → SavingsGoal (One-to-Many)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category Entity -->
+                <div class="card entity-card">
+                    <div class="card-header">
+                        <h4>📂 Kategorija (Category)</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Atributi:</h5>
+                                <ul>
+                                    <li><strong>id</strong> - Long (Primary Key)</li>
+                                    <li><strong>name</strong> - String (not null)</li>
+                                    <li><strong>type</strong> - <span class="enum-badge">INCOME/EXPENSE</span></li>
+                                    <li><strong>predefined</strong> - boolean (not null)</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Veze:</h5>
+                                <ul>
+                                    <li><strong>user</strong> → User (Many-to-One, nullable)</li>
+                                    <li><strong>transactions</strong> → Transaction (One-to-Many)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction Entity -->
+                <div class="card entity-card">
+                    <div class="card-header">
+                        <h4>💳 Transakcija (Transaction)</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Atributi:</h5>
+                                <ul>
+                                    <li><strong>id</strong> - Long (Primary Key)</li>
+                                    <li><strong>name</strong> - String (not null)</li>
+                                    <li><strong>amount</strong> - BigDecimal (not null)</li>
+                                    <li><strong>type</strong> - <span class="enum-badge">INCOME/EXPENSE</span></li>
+                                    <li><strong>dateOfTransaction</strong> - Date (not null)</li>
+                                    <li><strong>repeating</strong> - boolean (not null)</li>
+                                    <li><strong>frequency</strong> - <span class="enum-badge">WEEKLY/MONTHLY/QUARTERLY/YEARLY</span></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Veze:</h5>
+                                <ul>
+                                    <li><strong>category</strong> → Category (Many-to-One)</li>
+                                    <li><strong>wallet</strong> → Wallet (Many-to-One)</li>
+                                    <li><strong>user</strong> → User (Many-to-One)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SavingsGoal Entity -->
+                <div class="card entity-card">
+                    <div class="card-header">
+                        <h4>🎯 Cilj Štednje (SavingsGoal)</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Atributi:</h5>
+                                <ul>
+                                    <li><strong>id</strong> - Long (Primary Key)</li>
+                                    <li><strong>name</strong> - String (not null)</li>
+                                    <li><strong>targetAmount</strong> - BigDecimal (not null)</li>
+                                    <li><strong>currentAmount</strong> - BigDecimal (not null)</li>
+                                    <li><strong>targetDate</strong> - Date (not null)</li>
+                                    <li><strong>dateOfCreation</strong> - Date (not null)</li>
+                                    <li><strong>completed</strong> - boolean (not null)</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Veze:</h5>
+                                <ul>
+                                    <li><strong>wallet</strong> → Wallet (Many-to-One)</li>
+                                    <li><strong>user</strong> → User (Many-to-One)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h3>Repository Sloj</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul>
+                                <li><strong>UserRepository</strong> - upravljanje korisnicima</li>
+                                <li><strong>CurrencyRepository</strong> - upravljanje valutama</li>
+                                <li><strong>WalletRepository</strong> - upravljanje novčanicima</li>
+                                <li><strong>CategoryRepository</strong> - upravljanje kategorijama</li>
+                                <li><strong>TransactionRepository</strong> - upravljanje transakcijama</li>
+                                <li><strong>SavingsGoalRepository</strong> - upravljanje ciljevima štednje</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="alert alert-success">
+                                <strong>Tehnologije:</strong>
+                                <ul class="mb-0">
+                                    <li>Java 11</li>
+                                    <li>Spring Boot 2.7.18</li>
+                                    <li>Spring Data JPA</li>
+                                    <li>MySQL Database</li>
+                                    <li>Maven</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <p class="text-muted">Prva kontrolna tačka - Model podataka i veze između entiteta</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

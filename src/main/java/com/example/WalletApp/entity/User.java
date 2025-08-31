@@ -1,83 +1,90 @@
 package com.example.WalletApp.entity;
 
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.io.Serializable;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-enum Role{
-
-    COSTUMER, ADMINISTRATOR
-
-}
-enum Val{
-
-    RSD, EUR, USD
-
-}
 @Entity
-public class User  implements Serializable {
+@Table(name = "users")
+public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    @Column
+    @Column(nullable = false)
     private String firstName;
 
-    @Column
+    @Column(nullable = false)
     private String lastName;
 
-    @Column
+    @Column(unique = true, nullable = false)
     private String username;
 
-    @Column
+    @Column(unique = true, nullable = false)
     private String email;
 
-    @Column
+    @Column(nullable = false)
     private String password;
 
-    @Column
+    @Column(nullable = false)
+    @Temporal(TemporalType.DATE)
     private Date birthDate;
 
-    @Column
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
     @Column
     private String imageLink;
 
-    @Column
-    private Val currency;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "currency_id")
+    private Currency currency;
 
-    @Column
+    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date dateOfRegistration;
 
-    @Column
-    private boolean blocked;
+    @Column(nullable = false)
+    private boolean blocked = false;
 
-    //link to wallet
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL )
-    private Set<Wallet> wallets =  new HashSet<>();
+    // Relationships
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Wallet> wallets = new HashSet<>();
 
-    //link to transaction.java
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Transaction> transactions = new HashSet<>();
 
-    //link to category.java
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Category> categories = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<SavingsGoal> savingsGoals = new HashSet<>();
 
-    //getters and setters
+    // Constructors
+    public User() {
+        this.dateOfRegistration = new Date();
+    }
 
-    public long getId() { return id; }
-    public void setId(long id) { this.id = id; }
+    public User(String firstName, String lastName, String username, String email, String password, 
+                Date birthDate, Role role, Currency currency) {
+        this();
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.birthDate = birthDate;
+        this.role = role;
+        this.currency = currency;
+    }
+
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }
@@ -103,8 +110,8 @@ public class User  implements Serializable {
     public String getImageLink() { return imageLink; }
     public void setImageLink(String imageLink) { this.imageLink = imageLink; }
 
-    public Val getCurrency() { return currency; }
-    public void setCurrency(Val currency) { this.currency = currency; }
+    public Currency getCurrency() { return currency; }
+    public void setCurrency(Currency currency) { this.currency = currency; }
 
     public Date getDateOfRegistration() { return dateOfRegistration; }
     public void setDateOfRegistration(Date dateOfRegistration) { this.dateOfRegistration = dateOfRegistration; }
@@ -121,4 +128,37 @@ public class User  implements Serializable {
     public Set<Category> getCategories() { return categories; }
     public void setCategories(Set<Category> categories) { this.categories = categories; }
 
+    public Set<SavingsGoal> getSavingsGoals() { return savingsGoals; }
+    public void setSavingsGoals(Set<SavingsGoal> savingsGoals) { this.savingsGoals = savingsGoals; }
+
+    // Helper methods
+    public void addWallet(Wallet wallet) {
+        wallets.add(wallet);
+        wallet.setUser(this);
+    }
+
+    public void removeWallet(Wallet wallet) {
+        wallets.remove(wallet);
+        wallet.setUser(null);
+    }
+
+    public void addTransaction(Transaction transaction) {
+        transactions.add(transaction);
+        transaction.setUser(this);
+    }
+
+    public void addCategory(Category category) {
+        categories.add(category);
+        category.setUser(this);
+    }
+
+    public void addSavingsGoal(SavingsGoal savingsGoal) {
+        savingsGoals.add(savingsGoal);
+        savingsGoal.setUser(this);
+    }
+}
+
+// Enum definitions
+enum Role {
+    USER, ADMINISTRATOR
 }

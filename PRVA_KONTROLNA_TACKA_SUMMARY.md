@@ -1,10 +1,8 @@
 # Prva Kontrolna Tačka - Lični Finansijski Menadžer
 
-## 📋 Pregled Implementacije
+### Šta smo implementirali:
 
-### ✅ Šta je implementirano:
-
-#### 1. **Model Podataka (Entiteti)**
+#### 1. **Model Podataka (Entities)**
 - **User** - Korisnik sa svim potrebnim poljima i vezaма
 - **Currency** - Valuta sa konverzijom u EUR
 - **Wallet** - Novčanik sa stanjem i valutom
@@ -21,7 +19,7 @@
 - `@Temporal` - za datum polja
 - `@Column` - za konfiguraciju kolona
 
-#### 3. **Repository Sloj**
+#### 3. **Repo Sloj**
 - **UserRepository** - upravljanje korisnicima
 - **CurrencyRepository** - upravljanje valutama
 - **WalletRepository** - upravljanje novčanicima
@@ -35,7 +33,7 @@
 - **Maven** - sve potrebne zavisnosti
 - **Testovi** - unit testovi za entitete
 
-## 🚀 Kako pokrenuti aplikaciju:
+## Kako pokrenuti aplikaciju:
 
 ### 1. **Pokretanje aplikacije:**
 ```bash
@@ -52,7 +50,7 @@ mvn spring-boot:run -Dspring-boot.run.profiles=test
 - **Username:** `sa`
 - **Password:** (prazno)
 
-## 📊 Šta možete videti:
+## Šta možete videti:
 
 ### **Status stranica** prikazuje:
 - Vreme pokretanja
@@ -84,23 +82,15 @@ Wallet (N) ←→ (1) Currency
 Category (1) ←→ (N) Transaction
 ```
 
-## 📝 Enums:
+##  Enums:
 
 - **Role:** USER, ADMINISTRATOR
 - **CategoryType:** INCOME, EXPENSE
 - **TransactionType:** INCOME, EXPENSE
 - **Frequency:** WEEKLY, MONTHLY, QUARTERLY, YEARLY
 
-## 🎯 Prva kontrolna tačka je ZAVRŠENA!
 
-Svi zahtevi su ispunjeni:
-- ✅ Model podataka sa JPA anotacijama
-- ✅ Repository sloj implementiran
-- ✅ Aplikacija se pokreće i radi
-- ✅ Testovi prolaze
-- ✅ Dokumentacija dostupna
-
-## 📁 Struktura projekta:
+## Struktura projekta:
 
 ```
 src/main/java/com/example/WalletApp/
@@ -125,12 +115,4 @@ src/main/java/com/example/WalletApp/
     └── SavingsGoalRepository.java
 ```
 
-## 🔄 GitHub Pull Request:
-
-- **Branch:** `feature/prva-kontrolna-tacka`
-- **Status:** Spreman za review
-- **Commit:** `06cde89` - Prva kontrolna tačka implementacija
-
----
-
-**Napomena:** Ova implementacija koristi H2 in-memory bazu podataka za testiranje, što je dovoljno za prvu kontrolnu tačku. MySQL konfiguracija je pripremljena za kasnije faze projekta.
+**Napomena:** Ova implementacija koristi H2 in-memory bazu podataka za testiranje. MySQL konfiguracija je pripremljena za kasnije faze projekta.

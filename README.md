@@ -69,8 +69,3 @@ Aplikacija omogućava korisnicima praćenje prihoda, rashoda, postavljanje cilje
 - Korisnici imaju pristup samo sopstvenim podacima
 
 ---
-
-## Instalacija i pokretanje
-1. Klonirajte repozitorijum:
-   ```bash
-   git clone [link-ka-repozitorijumu]

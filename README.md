@@ -1,6 +1,6 @@
 # Lični Finansijski Menadžer
 
-Dobrodošli na projekat **Lični Finansijski Menadžer**, veb aplikacija razvijena kao deo kursa **Veb programiranje 2 (WEB II)** za školsku 2024/25. godinu.
+Dobrodošli na projekat **Lični Finansijski Menadžer**, veb aplikacija razvijena kao deo kursa **Veb programiranja** za školsku 2024/25. godinu.
 
 Aplikacija omogućava korisnicima praćenje prihoda, rashoda, postavljanje ciljeva štednje i analizu finansija kroz interaktivne izveštaje i statistiku. Projekat je izrađen korišćenjem **Spring Boota** za backend i **Vue.js**-a za frontend, sa fokusom na sigurnost, korisničko iskustvo i funkcionalnost.
 

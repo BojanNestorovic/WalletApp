@@ -1,2 +1,14 @@
-/home/vuk/Downloads/WalletApp/src/test/java/com/example/WalletApp/WalletAppApplicationTests.java
+/home/vuk/Downloads/WalletApp/src/test/java/com/example/WalletApp/controller/UserControllerTest.java
+/home/vuk/Downloads/WalletApp/src/test/java/com/example/WalletApp/controller/TransactionControllerTest.java
+/home/vuk/Downloads/WalletApp/src/test/java/com/example/WalletApp/controller/WalletControllerTest.java
+/home/vuk/Downloads/WalletApp/src/test/java/com/example/WalletApp/integration/WalletAppIntegrationTest.java
+/home/vuk/Downloads/WalletApp/src/test/java/com/example/WalletApp/config/TestSecurityConfig.java
+/home/vuk/Downloads/WalletApp/src/test/java/com/example/WalletApp/service/CategoryServiceTest.java
+/home/vuk/Downloads/WalletApp/src/test/java/com/example/WalletApp/service/TransactionServiceTest.java
 /home/vuk/Downloads/WalletApp/src/test/java/com/example/WalletApp/entity/UserTest.java
+/home/vuk/Downloads/WalletApp/src/test/java/com/example/WalletApp/service/WalletServiceTest.java
+/home/vuk/Downloads/WalletApp/src/test/java/com/example/WalletApp/WalletAppApplicationTests.java
+/home/vuk/Downloads/WalletApp/src/test/java/com/example/WalletApp/service/UserServiceTest.java
+/home/vuk/Downloads/WalletApp/src/test/java/com/example/WalletApp/service/CurrencyServiceTest.java
+/home/vuk/Downloads/WalletApp/src/test/java/com/example/WalletApp/service/SavingsGoalServiceTest.java
+/home/vuk/Downloads/WalletApp/src/test/java/com/example/WalletApp/controller/AuthControllerTest.java

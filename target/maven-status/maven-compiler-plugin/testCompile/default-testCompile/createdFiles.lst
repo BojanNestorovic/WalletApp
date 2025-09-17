@@ -1,2 +1,14 @@
-com/example/WalletApp/entity/UserTest.class
+com/example/WalletApp/service/UserServiceTest.class
+com/example/WalletApp/service/CategoryServiceTest.class
+com/example/WalletApp/integration/WalletAppIntegrationTest.class
 com/example/WalletApp/WalletAppApplicationTests.class
+com/example/WalletApp/config/TestSecurityConfig.class
+com/example/WalletApp/service/SavingsGoalServiceTest.class
+com/example/WalletApp/entity/UserTest.class
+com/example/WalletApp/service/TransactionServiceTest.class
+com/example/WalletApp/controller/AuthControllerTest.class
+com/example/WalletApp/service/CurrencyServiceTest.class
+com/example/WalletApp/controller/TransactionControllerTest.class
+com/example/WalletApp/controller/UserControllerTest.class
+com/example/WalletApp/service/WalletServiceTest.class
+com/example/WalletApp/controller/WalletControllerTest.class

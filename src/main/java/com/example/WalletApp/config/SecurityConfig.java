@@ -15,7 +15,7 @@ public class SecurityConfig {
         http
             .csrf().disable()
             .authorizeRequests()
-                .antMatchers("/", "/health", "/h2-console/**").permitAll()
+                .antMatchers("/", "/health", "/h2-console/**", "/api/**").permitAll()
                 .anyRequest().authenticated()
             .and()
             .headers().frameOptions().disable() // For H2 console

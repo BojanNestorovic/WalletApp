@@ -75,8 +75,3 @@ public class Category {
         transaction.setCategory(null);
     }
 }
-
-// Enum definition
-enum CategoryType {
-    INCOME, EXPENSE
-}

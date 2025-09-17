@@ -1,6 +1,7 @@
 package com.example.WalletApp.repository;
 
 import com.example.WalletApp.entity.Transaction;
+import com.example.WalletApp.entity.TransactionType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -61,4 +62,13 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     
     @Query("SELECT t FROM Transaction t WHERE t.repeating = true AND t.dateOfTransaction <= :date")
     List<Transaction> findRepeatingTransactionsDue(@Param("date") Date date);
+    
+    // Additional methods needed by service
+    List<Transaction> findByType(TransactionType type);
+    
+    List<Transaction> findByRepeating(boolean repeating);
+    
+    List<Transaction> findByDateOfTransactionBetween(Date startDate, Date endDate);
+    
+    List<Transaction> findByUserIdAndDateOfTransactionBetween(Long userId, Date startDate, Date endDate);
 }

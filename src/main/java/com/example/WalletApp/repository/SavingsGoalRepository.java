@@ -25,4 +25,7 @@ public interface SavingsGoalRepository extends JpaRepository<SavingsGoal, Long> 
     List<SavingsGoal> findGoalsByUserIdAndDateRange(@Param("userId") Long userId, 
                                                    @Param("startDate") Date startDate, 
                                                    @Param("endDate") Date endDate);
+    
+    // Additional method needed by service
+    List<SavingsGoal> findByUserIdAndTargetDateBetween(Long userId, Date startDate, Date endDate);
 }

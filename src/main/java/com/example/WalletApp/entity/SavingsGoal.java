@@ -2,6 +2,7 @@ package com.example.WalletApp.entity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 
 @Entity
@@ -88,7 +89,7 @@ public class SavingsGoal {
         if (targetAmount.compareTo(BigDecimal.ZERO) == 0) {
             return BigDecimal.ZERO;
         }
-        return currentAmount.divide(targetAmount, 4, BigDecimal.ROUND_HALF_UP)
+        return currentAmount.divide(targetAmount, 4, RoundingMode.HALF_UP)
                            .multiply(new BigDecimal("100"));
     }
 
@@ -117,8 +118,8 @@ public class SavingsGoal {
         if (totalDays <= 0) return false;
         
         BigDecimal expectedProgress = new BigDecimal(elapsedDays)
-            .divide(new BigDecimal(totalDays), 4, BigDecimal.ROUND_HALF_UP);
-        BigDecimal actualProgress = currentAmount.divide(targetAmount, 4, BigDecimal.ROUND_HALF_UP);
+            .divide(new BigDecimal(totalDays), 4, RoundingMode.HALF_UP);
+        BigDecimal actualProgress = currentAmount.divide(targetAmount, 4, RoundingMode.HALF_UP);
         
         return actualProgress.compareTo(expectedProgress) >= 0;
     }

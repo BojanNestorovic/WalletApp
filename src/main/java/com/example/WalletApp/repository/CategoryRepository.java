@@ -1,6 +1,7 @@
 package com.example.WalletApp.repository;
 
 import com.example.WalletApp.entity.Category;
+import com.example.WalletApp.entity.CategoryType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,4 +32,11 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     boolean existsByNameAndUserId(String name, Long userId);
     
     boolean existsByNameAndPredefined(String name, boolean predefined);
+    
+    // Additional methods needed by service
+    List<Category> findByUserIdAndPredefined(Long userId, boolean predefined);
+    
+    List<Category> findByType(CategoryType type);
+    
+    List<Category> findByTypeAndUserId(CategoryType type, Long userId);
 }

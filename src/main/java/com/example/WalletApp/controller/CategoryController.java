@@ -14,6 +14,20 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * REST kontroler za upravljanje kategorijama
+ * 
+ * Ovaj kontroler pruža API endpoint-e za:
+ * - Dohvatanje svih kategorija
+ * - Dohvatanje kategorije po ID-u
+ * - Kreiranje novih kategorija
+ * - Ažuriranje postojećih kategorija
+ * - Brisanje kategorija
+ * - Pretragu kategorija sa paginacijom
+ * 
+ * @author vuksta
+ * @version 1.0
+ */
 @RestController
 @RequestMapping("/api/categories")
 @CrossOrigin(origins = "*")

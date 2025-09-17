@@ -15,6 +15,21 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * REST kontroler za upravljanje novčanicima
+ * 
+ * Ovaj kontroler pruža API endpoint-e za:
+ * - Kreiranje novih novčanika
+ * - Dohvatanje novčanika po ID-u
+ * - Ažuriranje postojećih novčanika
+ * - Brisanje novčanika
+ * - Dohvatanje novčanika po korisniku
+ * - Upravljanje balansom novčanika
+ * - Statistike i analitiku
+ * 
+ * @author vuksta
+ * @version 1.0
+ */
 @RestController
 @RequestMapping("/api/wallets")
 @CrossOrigin(origins = "*")

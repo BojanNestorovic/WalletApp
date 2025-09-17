@@ -17,6 +17,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * REST kontroler za upravljanje štednim ciljevima
+ * 
+ * Ovaj kontroler pruža API endpoint-e za:
+ * - Dohvatanje svih štednih ciljeva
+ * - Dohvatanje štednog cilja po ID-u
+ * - Kreiranje novih štednih ciljeva
+ * - Ažuriranje postojećih štednih ciljeva
+ * - Brisanje štednih ciljeva
+ * - Dohvatanje štednih ciljeva po korisniku
+ * - Pretragu štednih ciljeva sa paginacijom
+ * 
+ * @author vuksta
+ * @version 1.0
+ */
 @RestController
 @RequestMapping("/api/savings-goals")
 @CrossOrigin(origins = "*")

@@ -5,6 +5,18 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Kontroler za osnovne informacije o aplikaciji
+ * 
+ * Ovaj kontroler pruža endpoint-e za:
+ * - Status aplikacije i sistema
+ * - Informacije o bazi podataka
+ * - Listu entiteta i repozitorijuma
+ * - Health check endpoint
+ * 
+ * @author vuksta
+ * @version 1.0
+ */
 @RestController
 public class HomeController {
 

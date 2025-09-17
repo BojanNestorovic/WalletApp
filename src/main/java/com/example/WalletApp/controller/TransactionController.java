@@ -16,6 +16,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * REST kontroler za upravljanje transakcijama
+ * 
+ * Ovaj kontroler pruža API endpoint-e za:
+ * - Kreiranje novih transakcija
+ * - Dohvatanje transakcija po ID-u
+ * - Ažuriranje postojećih transakcija
+ * - Brisanje transakcija
+ * - Dohvatanje transakcija po novčaniku
+ * - Filtriranje transakcija po datumu
+ * - Pretragu transakcija sa paginacijom
+ * 
+ * @author vuksta
+ * @version 1.0
+ */
 @RestController
 @RequestMapping("/api/transactions")
 @CrossOrigin(origins = "*")

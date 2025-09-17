@@ -13,6 +13,21 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * REST kontroler za upravljanje korisnicima
+ * 
+ * Ovaj kontroler pruža API endpoint-e za:
+ * - Dohvatanje svih korisnika
+ * - Dohvatanje korisnika po ID-u
+ * - Kreiranje novih korisnika
+ * - Ažuriranje postojećih korisnika
+ * - Brisanje korisnika
+ * - Pretragu korisnika sa paginacijom
+ * - Upravljanje statusom korisnika
+ * 
+ * @author vuksta
+ * @version 1.0
+ */
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "*")

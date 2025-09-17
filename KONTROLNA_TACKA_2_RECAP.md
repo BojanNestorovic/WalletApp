@@ -1,8 +1,5 @@
 # Druga Kontrolna Tačka - WalletApp Backend API
 
-## Šta je urađeno
-
-Implementirali smo kompletan backend API za WalletApp aplikaciju. Ovo nije neki fancy frontend sa animacijama i glupostima - ovo je pravi backend koji radi kako treba.
 
 ### Arhitektura
 
@@ -119,11 +116,6 @@ Dodali smo kompletne Javadoc komentare na srpskom jeziku:
 - Lazy loading za relacije
 - Optimizovane query-je
 
-## Zaključak
-
-Ovo je solidan backend API koji radi kako treba. Nema fancy feature-a koji nisu potrebni, nema over-engineering-a, nema nepotrebnih abstrakcija. Kod je čist, testiran, i dokumentovan. 
-
-Ako neko ne može da razume kako ovo radi, problem je u njemu, ne u kodu.
 
 ---
 

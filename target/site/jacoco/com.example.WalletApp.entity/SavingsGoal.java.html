@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SavingsGoal.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WalletApp</a> &gt; <a href="index.source.html" class="el_package">com.example.WalletApp.entity</a> &gt; <span class="el_source">SavingsGoal.java</span></div><h1>SavingsGoal.java</h1><pre class="source lang-java linenums">package com.example.WalletApp.entity;
+
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Date;
+
+@Entity
+@Table(name = &quot;savings_goals&quot;)
+public class SavingsGoal {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal targetAmount;
+
+<span class="fc" id="L22">    @Column(nullable = false, precision = 19, scale = 2)</span>
+    private BigDecimal currentAmount = BigDecimal.ZERO;
+
+    @Column(nullable = false)
+    @Temporal(TemporalType.DATE)
+    private Date targetDate;
+
+    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateOfCreation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;wallet_id&quot;, nullable = false)
+    private Wallet wallet;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;user_id&quot;, nullable = false)
+    private User user;
+
+<span class="fc" id="L41">    @Column(nullable = false)</span>
+    private boolean completed = false;
+
+    // Constructors
+<span class="fc" id="L45">    public SavingsGoal() {</span>
+<span class="fc" id="L46">        this.dateOfCreation = new Date();</span>
+<span class="fc" id="L47">        this.currentAmount = BigDecimal.ZERO;</span>
+<span class="fc" id="L48">    }</span>
+
+    public SavingsGoal(String name, BigDecimal targetAmount, Date targetDate, Wallet wallet, User user) {
+<span class="nc" id="L51">        this();</span>
+<span class="nc" id="L52">        this.name = name;</span>
+<span class="nc" id="L53">        this.targetAmount = targetAmount;</span>
+<span class="nc" id="L54">        this.targetDate = targetDate;</span>
+<span class="nc" id="L55">        this.wallet = wallet;</span>
+<span class="nc" id="L56">        this.user = user;</span>
+<span class="nc" id="L57">    }</span>
+
+    // Getters and Setters
+<span class="fc" id="L60">    public Long getId() { return id; }</span>
+<span class="fc" id="L61">    public void setId(Long id) { this.id = id; }</span>
+
+<span class="fc" id="L63">    public String getName() { return name; }</span>
+<span class="fc" id="L64">    public void setName(String name) { this.name = name; }</span>
+
+<span class="fc" id="L66">    public BigDecimal getTargetAmount() { return targetAmount; }</span>
+<span class="fc" id="L67">    public void setTargetAmount(BigDecimal targetAmount) { this.targetAmount = targetAmount; }</span>
+
+<span class="fc" id="L69">    public BigDecimal getCurrentAmount() { return currentAmount; }</span>
+<span class="fc" id="L70">    public void setCurrentAmount(BigDecimal currentAmount) { this.currentAmount = currentAmount; }</span>
+
+<span class="fc" id="L72">    public Date getTargetDate() { return targetDate; }</span>
+<span class="fc" id="L73">    public void setTargetDate(Date targetDate) { this.targetDate = targetDate; }</span>
+
+<span class="fc" id="L75">    public Date getDateOfCreation() { return dateOfCreation; }</span>
+<span class="fc" id="L76">    public void setDateOfCreation(Date dateOfCreation) { this.dateOfCreation = dateOfCreation; }</span>
+
+<span class="fc" id="L78">    public Wallet getWallet() { return wallet; }</span>
+<span class="fc" id="L79">    public void setWallet(Wallet wallet) { this.wallet = wallet; }</span>
+
+<span class="fc" id="L81">    public User getUser() { return user; }</span>
+<span class="fc" id="L82">    public void setUser(User user) { this.user = user; }</span>
+
+<span class="fc" id="L84">    public boolean isCompleted() { return completed; }</span>
+<span class="fc" id="L85">    public void setCompleted(boolean completed) { this.completed = completed; }</span>
+
+    // Helper methods
+    public BigDecimal getProgressPercentage() {
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        if (targetAmount.compareTo(BigDecimal.ZERO) == 0) {</span>
+<span class="nc" id="L90">            return BigDecimal.ZERO;</span>
+        }
+<span class="nc" id="L92">        return currentAmount.divide(targetAmount, 4, RoundingMode.HALF_UP)</span>
+<span class="nc" id="L93">                           .multiply(new BigDecimal(&quot;100&quot;));</span>
+    }
+
+    public BigDecimal getRemainingAmount() {
+<span class="nc" id="L97">        return targetAmount.subtract(currentAmount);</span>
+    }
+
+    public boolean isOverdue() {
+<span class="pc bpc" id="L101" title="2 of 4 branches missed.">        return new Date().after(targetDate) &amp;&amp; !completed;</span>
+    }
+
+    public void addAmount(BigDecimal amount) {
+<span class="fc" id="L105">        this.currentAmount = this.currentAmount.add(amount);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        if (this.currentAmount.compareTo(this.targetAmount) &gt;= 0) {</span>
+<span class="fc" id="L107">            this.completed = true;</span>
+        }
+<span class="fc" id="L109">    }</span>
+
+    public boolean isOnTrack() {
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (completed) return true;</span>
+        
+<span class="nc" id="L114">        Date now = new Date();</span>
+<span class="nc" id="L115">        long totalDays = (targetDate.getTime() - dateOfCreation.getTime()) / (1000 * 60 * 60 * 24);</span>
+<span class="nc" id="L116">        long elapsedDays = (now.getTime() - dateOfCreation.getTime()) / (1000 * 60 * 60 * 24);</span>
+        
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        if (totalDays &lt;= 0) return false;</span>
+        
+<span class="nc" id="L120">        BigDecimal expectedProgress = new BigDecimal(elapsedDays)</span>
+<span class="nc" id="L121">            .divide(new BigDecimal(totalDays), 4, RoundingMode.HALF_UP);</span>
+<span class="nc" id="L122">        BigDecimal actualProgress = currentAmount.divide(targetAmount, 4, RoundingMode.HALF_UP);</span>
+        
+<span class="nc bnc" id="L124" title="All 2 branches missed.">        return actualProgress.compareTo(expectedProgress) &gt;= 0;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

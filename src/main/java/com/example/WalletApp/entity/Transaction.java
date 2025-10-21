@@ -111,12 +111,3 @@ public class Transaction {
         }
     }
 }
-
-// Enum definitions
-enum TransactionType {
-    INCOME, EXPENSE
-}
-
-enum Frequency {
-    WEEKLY, MONTHLY, QUARTERLY, YEARLY
-}

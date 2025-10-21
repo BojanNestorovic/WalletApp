@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SavingsGoalDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WalletApp</a> &gt; <a href="index.source.html" class="el_package">com.example.WalletApp.dto</a> &gt; <span class="el_source">SavingsGoalDTO.java</span></div><h1>SavingsGoalDTO.java</h1><pre class="source lang-java linenums">package com.example.WalletApp.dto;
+
+import javax.validation.constraints.*;
+import java.math.BigDecimal;
+import java.util.Date;
+
+public class SavingsGoalDTO {
+    private Long id;
+    
+    @NotBlank(message = &quot;Goal name is required&quot;)
+    @Size(min = 2, max = 100, message = &quot;Goal name must be between 2 and 100 characters&quot;)
+    private String name;
+    
+    @NotNull(message = &quot;Target amount is required&quot;)
+    @DecimalMin(value = &quot;0.01&quot;, message = &quot;Target amount must be greater than 0&quot;)
+    private BigDecimal targetAmount;
+    
+    private BigDecimal currentAmount;
+    private Date targetDate;
+    private Date dateOfCreation;
+    private Long walletId;
+    private Long userId;
+    private boolean completed;
+    
+    // Constructors
+<span class="fc" id="L26">    public SavingsGoalDTO() {}</span>
+    
+    public SavingsGoalDTO(String name, BigDecimal targetAmount, Date targetDate, 
+<span class="nc" id="L29">                         Long walletId, Long userId) {</span>
+<span class="nc" id="L30">        this.name = name;</span>
+<span class="nc" id="L31">        this.targetAmount = targetAmount;</span>
+<span class="nc" id="L32">        this.targetDate = targetDate;</span>
+<span class="nc" id="L33">        this.walletId = walletId;</span>
+<span class="nc" id="L34">        this.userId = userId;</span>
+<span class="nc" id="L35">    }</span>
+    
+    // Getters and Setters
+<span class="fc" id="L38">    public Long getId() { return id; }</span>
+<span class="fc" id="L39">    public void setId(Long id) { this.id = id; }</span>
+    
+<span class="fc" id="L41">    public String getName() { return name; }</span>
+<span class="fc" id="L42">    public void setName(String name) { this.name = name; }</span>
+    
+<span class="fc" id="L44">    public BigDecimal getTargetAmount() { return targetAmount; }</span>
+<span class="fc" id="L45">    public void setTargetAmount(BigDecimal targetAmount) { this.targetAmount = targetAmount; }</span>
+    
+<span class="fc" id="L47">    public BigDecimal getCurrentAmount() { return currentAmount; }</span>
+<span class="fc" id="L48">    public void setCurrentAmount(BigDecimal currentAmount) { this.currentAmount = currentAmount; }</span>
+    
+<span class="fc" id="L50">    public Date getTargetDate() { return targetDate; }</span>
+<span class="fc" id="L51">    public void setTargetDate(Date targetDate) { this.targetDate = targetDate; }</span>
+    
+<span class="fc" id="L53">    public Date getDateOfCreation() { return dateOfCreation; }</span>
+<span class="fc" id="L54">    public void setDateOfCreation(Date dateOfCreation) { this.dateOfCreation = dateOfCreation; }</span>
+    
+<span class="fc" id="L56">    public Long getWalletId() { return walletId; }</span>
+<span class="fc" id="L57">    public void setWalletId(Long walletId) { this.walletId = walletId; }</span>
+    
+<span class="fc" id="L59">    public Long getUserId() { return userId; }</span>
+<span class="fc" id="L60">    public void setUserId(Long userId) { this.userId = userId; }</span>
+    
+<span class="fc" id="L62">    public boolean isCompleted() { return completed; }</span>
+<span class="fc" id="L63">    public void setCompleted(boolean completed) { this.completed = completed; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

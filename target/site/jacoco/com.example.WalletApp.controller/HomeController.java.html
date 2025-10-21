@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HomeController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WalletApp</a> &gt; <a href="index.source.html" class="el_package">com.example.WalletApp.controller</a> &gt; <span class="el_source">HomeController.java</span></div><h1>HomeController.java</h1><pre class="source lang-java linenums">package com.example.WalletApp.controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+/**
+ * Kontroler za osnovne informacije o aplikaciji
+ * 
+ * Ovaj kontroler pruža endpoint-e za:
+ * - Status aplikacije i sistema
+ * - Informacije o bazi podataka
+ * - Listu entiteta i repozitorijuma
+ * - Health check endpoint
+ * 
+ * @author vuksta
+ * @version 1.0
+ */
+@RestController
+<span class="fc" id="L21">public class HomeController {</span>
+
+    @GetMapping(&quot;/&quot;)
+    public String home() {
+<span class="nc" id="L25">        LocalDateTime now = LocalDateTime.now();</span>
+<span class="nc" id="L26">        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(&quot;yyyy-MM-dd HH:mm:ss&quot;);</span>
+        
+<span class="nc" id="L28">        return &quot;=== WALLET APP - STATUS SISTEMA ===\n&quot; +</span>
+<span class="nc" id="L29">               &quot;Vreme: &quot; + now.format(formatter) + &quot;\n&quot; +</span>
+               &quot;Status: AKTIVAN\n&quot; +
+               &quot;Verzija: 1.0.0\n&quot; +
+               &quot;Okruženje: Razvoj\n\n&quot; +
+               
+               &quot;=== BAZA PODATAKA ===\n&quot; +
+               &quot;Tip: H2 In-Memory\n&quot; +
+               &quot;Status: POVEZANA\n&quot; +
+               &quot;Tabele: 6 entiteta kreirano\n&quot; +
+               &quot;Šema: Automatski generisana\n\n&quot; +
+               
+               &quot;=== ENTITETI ===\n&quot; +
+               &quot;✓ User (korisnici)\n&quot; +
+               &quot;✓ Currency (valute)\n&quot; +
+               &quot;✓ Wallet (novčanici)\n&quot; +
+               &quot;✓ Category (kategorije)\n&quot; +
+               &quot;✓ Transaction (transakcije)\n&quot; +
+               &quot;✓ SavingsGoal (ciljevi štednje)\n\n&quot; +
+               
+               &quot;=== REPOZITORIJUMI ===\n&quot; +
+               &quot;✓ UserRepository\n&quot; +
+               &quot;✓ CurrencyRepository\n&quot; +
+               &quot;✓ WalletRepository\n&quot; +
+               &quot;✓ CategoryRepository\n&quot; +
+               &quot;✓ TransactionRepository\n&quot; +
+               &quot;✓ SavingsGoalRepository\n\n&quot; +
+               
+               &quot;=== ENDPOINTI ===\n&quot; +
+               &quot;GET /api/ - Status (ova stranica)\n&quot; +
+               &quot;GET /api/health - Provera zdravlja\n&quot; +
+               &quot;GET /api/h2-console/ - Konzola baze podataka\n\n&quot; +
+               
+               &quot;=== KONTROLNA TAČKA ===\n&quot; +
+               &quot;Prva Kontrolna Tačka: ZAVRŠENA\n&quot; +
+               &quot;Model podataka: ✓\n&quot; +
+               &quot;Repository sloj: ✓\n&quot; +
+               &quot;Konfiguracija: ✓\n\n&quot; +
+               
+               &quot;Spremno za Drugu Kontrolnu Tačku&quot;;
+    }
+
+    @GetMapping(&quot;/health&quot;)
+    public String health() {
+<span class="nc" id="L72">        return &quot;OK&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

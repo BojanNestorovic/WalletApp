@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WalletDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WalletApp</a> &gt; <a href="index.source.html" class="el_package">com.example.WalletApp.dto</a> &gt; <span class="el_source">WalletDTO.java</span></div><h1>WalletDTO.java</h1><pre class="source lang-java linenums">package com.example.WalletApp.dto;
+
+import javax.validation.constraints.*;
+import java.math.BigDecimal;
+import java.util.Date;
+
+/**
+ * Data Transfer Object (DTO) za novčanik
+ * 
+ * DTO sadrži podatke o novčaniku koji se koriste za prenos između slojeva.
+ * Uključuje validacione anotacije za osnovne podatke novčanika.
+ * 
+ * @author vuksta
+ * @version 1.0
+ */
+public class WalletDTO {
+    private Long id;
+    
+    // Naziv novčanika - obavezno polje
+    @NotBlank(message = &quot;Wallet name is required&quot;)
+    @Size(min = 2, max = 50, message = &quot;Wallet name must be between 2 and 50 characters&quot;)
+    private String name;
+    
+    // Početni balans - mora biti nenegativan
+    @NotNull(message = &quot;Initial balance is required&quot;)
+    @DecimalMin(value = &quot;0.0&quot;, message = &quot;Initial balance must be non-negative&quot;)
+    private BigDecimal initialBalance;
+    
+    // Trenutni balans - može se razlikovati od početnog
+    private BigDecimal currentBalance;
+    
+    // Datum kreiranja novčanika
+    private Date dateOfCreation;
+    
+    // ID korisnika koji poseduje novčanik
+    private Long userId;
+    
+    // ID valute u kojoj je novčanik
+    private Long currencyId;
+    
+    // Da li je novčanik namenjen za štednju
+    private boolean savings;
+    
+    // Da li je novčanik arhiviran
+    private boolean archived;
+    
+    /**
+     * Podrazumevani konstruktor
+     */
+<span class="fc" id="L50">    public WalletDTO() {}</span>
+    
+    /**
+     * Konstruktor sa osnovnim podacima novčanika
+     * 
+     * @param name - naziv novčanika
+     * @param initialBalance - početni balans
+     * @param userId - ID korisnika
+     * @param currencyId - ID valute
+     */
+<span class="nc" id="L60">    public WalletDTO(String name, BigDecimal initialBalance, Long userId, Long currencyId) {</span>
+<span class="nc" id="L61">        this.name = name;</span>
+<span class="nc" id="L62">        this.initialBalance = initialBalance;</span>
+<span class="nc" id="L63">        this.userId = userId;</span>
+<span class="nc" id="L64">        this.currencyId = currencyId;</span>
+<span class="nc" id="L65">    }</span>
+    
+    // Getters and Setters - omogućavaju pristup privatnim poljima
+<span class="fc" id="L68">    public Long getId() { return id; }</span>
+<span class="fc" id="L69">    public void setId(Long id) { this.id = id; }</span>
+    
+<span class="fc" id="L71">    public String getName() { return name; }</span>
+<span class="fc" id="L72">    public void setName(String name) { this.name = name; }</span>
+    
+<span class="fc" id="L74">    public BigDecimal getInitialBalance() { return initialBalance; }</span>
+<span class="fc" id="L75">    public void setInitialBalance(BigDecimal initialBalance) { this.initialBalance = initialBalance; }</span>
+    
+<span class="fc" id="L77">    public BigDecimal getCurrentBalance() { return currentBalance; }</span>
+<span class="fc" id="L78">    public void setCurrentBalance(BigDecimal currentBalance) { this.currentBalance = currentBalance; }</span>
+    
+<span class="fc" id="L80">    public Date getDateOfCreation() { return dateOfCreation; }</span>
+<span class="fc" id="L81">    public void setDateOfCreation(Date dateOfCreation) { this.dateOfCreation = dateOfCreation; }</span>
+    
+<span class="fc" id="L83">    public Long getUserId() { return userId; }</span>
+<span class="fc" id="L84">    public void setUserId(Long userId) { this.userId = userId; }</span>
+    
+<span class="fc" id="L86">    public Long getCurrencyId() { return currencyId; }</span>
+<span class="fc" id="L87">    public void setCurrencyId(Long currencyId) { this.currencyId = currencyId; }</span>
+    
+<span class="fc" id="L89">    public boolean isSavings() { return savings; }</span>
+<span class="fc" id="L90">    public void setSavings(boolean savings) { this.savings = savings; }</span>
+    
+<span class="fc" id="L92">    public boolean isArchived() { return archived; }</span>
+<span class="fc" id="L93">    public void setArchived(boolean archived) { this.archived = archived; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

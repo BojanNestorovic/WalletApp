@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WalletApp</a> &gt; <a href="index.source.html" class="el_package">com.example.WalletApp.controller</a> &gt; <span class="el_source">TransactionController.java</span></div><h1>TransactionController.java</h1><pre class="source lang-java linenums">package com.example.WalletApp.controller;
+
+import com.example.WalletApp.dto.TransactionDTO;
+import com.example.WalletApp.entity.Transaction;
+import com.example.WalletApp.service.TransactionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * REST kontroler za upravljanje transakcijama
+ * 
+ * Ovaj kontroler pruža API endpoint-e za:
+ * - Kreiranje novih transakcija
+ * - Dohvatanje transakcija po ID-u
+ * - Ažuriranje postojećih transakcija
+ * - Brisanje transakcija
+ * - Dohvatanje transakcija po novčaniku
+ * - Filtriranje transakcija po datumu
+ * - Pretragu transakcija sa paginacijom
+ * 
+ * @author vuksta
+ * @version 1.0
+ */
+@RestController
+@RequestMapping(&quot;/api/transactions&quot;)
+@CrossOrigin(origins = &quot;*&quot;)
+<span class="fc" id="L37">public class TransactionController {</span>
+
+    @Autowired
+    private TransactionService transactionService;
+
+    // Get all transactions
+    @GetMapping
+    public ResponseEntity&lt;List&lt;TransactionDTO&gt;&gt; getAllTransactions() {
+<span class="fc" id="L45">        List&lt;Transaction&gt; transactions = transactionService.getAllTransactions();</span>
+<span class="fc" id="L46">        List&lt;TransactionDTO&gt; transactionDTOs = transactions.stream()</span>
+<span class="fc" id="L47">            .map(transactionService::convertToDTO)</span>
+<span class="fc" id="L48">            .toList();</span>
+<span class="fc" id="L49">        return ResponseEntity.ok(transactionDTOs);</span>
+    }
+
+    // Get all transactions with pagination
+    @GetMapping(&quot;/page&quot;)
+    public ResponseEntity&lt;Page&lt;TransactionDTO&gt;&gt; getAllTransactions(Pageable pageable) {
+<span class="fc" id="L55">        Page&lt;Transaction&gt; transactions = transactionService.getAllTransactions(pageable);</span>
+<span class="fc" id="L56">        Page&lt;TransactionDTO&gt; transactionDTOs = transactions.map(transactionService::convertToDTO);</span>
+<span class="fc" id="L57">        return ResponseEntity.ok(transactionDTOs);</span>
+    }
+
+    // Get transaction by ID
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; getTransactionById(@PathVariable Long id) {
+<span class="fc" id="L63">        Optional&lt;Transaction&gt; transaction = transactionService.getTransactionById(id);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (transaction.isPresent()) {</span>
+<span class="fc" id="L65">            TransactionDTO transactionDTO = transactionService.convertToDTO(transaction.get());</span>
+<span class="fc" id="L66">            return ResponseEntity.ok(transactionDTO);</span>
+        } else {
+<span class="fc" id="L68">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+    // Create new transaction
+    @PostMapping
+    public ResponseEntity&lt;?&gt; createTransaction(@Valid @RequestBody TransactionDTO transactionDTO) {
+        try {
+<span class="fc" id="L76">            Transaction transaction = transactionService.convertToEntity(transactionDTO);</span>
+<span class="fc" id="L77">            Transaction createdTransaction = transactionService.createTransaction(transaction);</span>
+<span class="fc" id="L78">            TransactionDTO responseDTO = transactionService.convertToDTO(createdTransaction);</span>
+<span class="fc" id="L79">            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);</span>
+<span class="nc" id="L80">        } catch (Exception e) {</span>
+<span class="nc" id="L81">            return ResponseEntity.badRequest().body(&quot;Error creating transaction: &quot; + e.getMessage());</span>
+        }
+    }
+
+    // Update transaction
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; updateTransaction(@PathVariable Long id, @Valid @RequestBody TransactionDTO transactionDTO) {
+        try {
+<span class="fc" id="L89">            Transaction transaction = transactionService.convertToEntity(transactionDTO);</span>
+<span class="fc" id="L90">            Transaction updatedTransaction = transactionService.updateTransaction(id, transaction);</span>
+<span class="fc" id="L91">            TransactionDTO responseDTO = transactionService.convertToDTO(updatedTransaction);</span>
+<span class="fc" id="L92">            return ResponseEntity.ok(responseDTO);</span>
+<span class="nc" id="L93">        } catch (Exception e) {</span>
+<span class="nc" id="L94">            return ResponseEntity.badRequest().body(&quot;Error updating transaction: &quot; + e.getMessage());</span>
+        }
+    }
+
+    // Delete transaction
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; deleteTransaction(@PathVariable Long id) {
+        try {
+<span class="fc" id="L102">            transactionService.deleteTransaction(id);</span>
+<span class="fc" id="L103">            return ResponseEntity.ok().body(&quot;Transaction deleted successfully&quot;);</span>
+<span class="nc" id="L104">        } catch (Exception e) {</span>
+<span class="nc" id="L105">            return ResponseEntity.badRequest().body(&quot;Error deleting transaction: &quot; + e.getMessage());</span>
+        }
+    }
+
+    // Get transactions by user ID
+    @GetMapping(&quot;/user/{userId}&quot;)
+    public ResponseEntity&lt;List&lt;TransactionDTO&gt;&gt; getTransactionsByUserId(@PathVariable Long userId) {
+<span class="fc" id="L112">        List&lt;Transaction&gt; transactions = transactionService.getTransactionsByUserId(userId);</span>
+<span class="fc" id="L113">        List&lt;TransactionDTO&gt; transactionDTOs = transactions.stream()</span>
+<span class="fc" id="L114">            .map(transactionService::convertToDTO)</span>
+<span class="fc" id="L115">            .toList();</span>
+<span class="fc" id="L116">        return ResponseEntity.ok(transactionDTOs);</span>
+    }
+
+    // Get transactions by wallet ID
+    @GetMapping(&quot;/wallet/{walletId}&quot;)
+    public ResponseEntity&lt;List&lt;TransactionDTO&gt;&gt; getTransactionsByWalletId(@PathVariable Long walletId) {
+<span class="fc" id="L122">        List&lt;Transaction&gt; transactions = transactionService.getTransactionsByWalletId(walletId);</span>
+<span class="fc" id="L123">        List&lt;TransactionDTO&gt; transactionDTOs = transactions.stream()</span>
+<span class="fc" id="L124">            .map(transactionService::convertToDTO)</span>
+<span class="fc" id="L125">            .toList();</span>
+<span class="fc" id="L126">        return ResponseEntity.ok(transactionDTOs);</span>
+    }
+
+    // Get transactions by category ID
+    @GetMapping(&quot;/category/{categoryId}&quot;)
+    public ResponseEntity&lt;List&lt;TransactionDTO&gt;&gt; getTransactionsByCategoryId(@PathVariable Long categoryId) {
+<span class="fc" id="L132">        List&lt;Transaction&gt; transactions = transactionService.getTransactionsByCategoryId(categoryId);</span>
+<span class="fc" id="L133">        List&lt;TransactionDTO&gt; transactionDTOs = transactions.stream()</span>
+<span class="fc" id="L134">            .map(transactionService::convertToDTO)</span>
+<span class="fc" id="L135">            .toList();</span>
+<span class="fc" id="L136">        return ResponseEntity.ok(transactionDTOs);</span>
+    }
+
+    // Get transactions by type
+    @GetMapping(&quot;/type/{type}&quot;)
+    public ResponseEntity&lt;List&lt;TransactionDTO&gt;&gt; getTransactionsByType(@PathVariable String type) {
+<span class="fc" id="L142">        List&lt;Transaction&gt; transactions = transactionService.getTransactionsByType(type);</span>
+<span class="fc" id="L143">        List&lt;TransactionDTO&gt; transactionDTOs = transactions.stream()</span>
+<span class="fc" id="L144">            .map(transactionService::convertToDTO)</span>
+<span class="fc" id="L145">            .toList();</span>
+<span class="fc" id="L146">        return ResponseEntity.ok(transactionDTOs);</span>
+    }
+
+    // Get repeating transactions
+    @GetMapping(&quot;/repeating&quot;)
+    public ResponseEntity&lt;List&lt;TransactionDTO&gt;&gt; getRepeatingTransactions() {
+<span class="fc" id="L152">        List&lt;Transaction&gt; transactions = transactionService.getRepeatingTransactions();</span>
+<span class="fc" id="L153">        List&lt;TransactionDTO&gt; transactionDTOs = transactions.stream()</span>
+<span class="fc" id="L154">            .map(transactionService::convertToDTO)</span>
+<span class="fc" id="L155">            .toList();</span>
+<span class="fc" id="L156">        return ResponseEntity.ok(transactionDTOs);</span>
+    }
+
+    // Get transactions by date range
+    @GetMapping(&quot;/date-range&quot;)
+    public ResponseEntity&lt;List&lt;TransactionDTO&gt;&gt; getTransactionsByDateRange(
+            @RequestParam @DateTimeFormat(pattern = &quot;yyyy-MM-dd&quot;) Date startDate,
+            @RequestParam @DateTimeFormat(pattern = &quot;yyyy-MM-dd&quot;) Date endDate) {
+<span class="fc" id="L164">        List&lt;Transaction&gt; transactions = transactionService.getTransactionsByDateRange(startDate, endDate);</span>
+<span class="fc" id="L165">        List&lt;TransactionDTO&gt; transactionDTOs = transactions.stream()</span>
+<span class="fc" id="L166">            .map(transactionService::convertToDTO)</span>
+<span class="fc" id="L167">            .toList();</span>
+<span class="fc" id="L168">        return ResponseEntity.ok(transactionDTOs);</span>
+    }
+
+    // Get transactions by user and date range
+    @GetMapping(&quot;/user/{userId}/date-range&quot;)
+    public ResponseEntity&lt;List&lt;TransactionDTO&gt;&gt; getTransactionsByUserAndDateRange(
+            @PathVariable Long userId,
+            @RequestParam @DateTimeFormat(pattern = &quot;yyyy-MM-dd&quot;) Date startDate,
+            @RequestParam @DateTimeFormat(pattern = &quot;yyyy-MM-dd&quot;) Date endDate) {
+<span class="fc" id="L177">        List&lt;Transaction&gt; transactions = transactionService.getTransactionsByUserAndDateRange(userId, startDate, endDate);</span>
+<span class="fc" id="L178">        List&lt;TransactionDTO&gt; transactionDTOs = transactions.stream()</span>
+<span class="fc" id="L179">            .map(transactionService::convertToDTO)</span>
+<span class="fc" id="L180">            .toList();</span>
+<span class="fc" id="L181">        return ResponseEntity.ok(transactionDTOs);</span>
+    }
+
+    // Get transaction statistics for user
+    @GetMapping(&quot;/user/{userId}/stats&quot;)
+    public ResponseEntity&lt;?&gt; getTransactionStatsByUserId(@PathVariable Long userId) {
+<span class="fc" id="L187">        double totalIncome = transactionService.getTotalIncomeByUserId(userId);</span>
+<span class="fc" id="L188">        double totalExpense = transactionService.getTotalExpenseByUserId(userId);</span>
+<span class="fc" id="L189">        double netBalance = transactionService.getNetBalanceByUserId(userId);</span>
+        
+<span class="fc" id="L191">        return ResponseEntity.ok().body(String.format(</span>
+            &quot;Total Income: %.2f, Total Expense: %.2f, Net Balance: %.2f&quot;, 
+<span class="fc" id="L193">            totalIncome, totalExpense, netBalance));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

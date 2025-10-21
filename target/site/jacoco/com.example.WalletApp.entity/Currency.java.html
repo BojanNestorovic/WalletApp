@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Currency.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WalletApp</a> &gt; <a href="index.source.html" class="el_package">com.example.WalletApp.entity</a> &gt; <span class="el_source">Currency.java</span></div><h1>Currency.java</h1><pre class="source lang-java linenums">package com.example.WalletApp.entity;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Table(name = &quot;currencies&quot;)
+public class Currency {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true, nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private Double valueToEur;
+
+<span class="fc" id="L21">    @OneToMany(mappedBy = &quot;currency&quot;, fetch = FetchType.LAZY)</span>
+    private Set&lt;Wallet&gt; wallets = new HashSet&lt;&gt;();
+
+<span class="fc" id="L24">    @OneToMany(mappedBy = &quot;currency&quot;, fetch = FetchType.LAZY)</span>
+    private Set&lt;User&gt; users = new HashSet&lt;&gt;();
+
+    // Constructors
+<span class="fc" id="L28">    public Currency() {}</span>
+
+<span class="fc" id="L30">    public Currency(String name, Double valueToEur) {</span>
+<span class="fc" id="L31">        this.name = name;</span>
+<span class="fc" id="L32">        this.valueToEur = valueToEur;</span>
+<span class="fc" id="L33">    }</span>
+
+    // Getters and Setters
+<span class="fc" id="L36">    public Long getId() { return id; }</span>
+<span class="fc" id="L37">    public void setId(Long id) { this.id = id; }</span>
+
+<span class="fc" id="L39">    public String getName() { return name; }</span>
+<span class="fc" id="L40">    public void setName(String name) { this.name = name; }</span>
+
+<span class="fc" id="L42">    public Double getValueToEur() { return valueToEur; }</span>
+<span class="fc" id="L43">    public void setValueToEur(Double valueToEur) { this.valueToEur = valueToEur; }</span>
+
+<span class="nc" id="L45">    public Set&lt;Wallet&gt; getWallets() { return wallets; }</span>
+<span class="nc" id="L46">    public void setWallets(Set&lt;Wallet&gt; wallets) { this.wallets = wallets; }</span>
+
+<span class="nc" id="L48">    public Set&lt;User&gt; getUsers() { return users; }</span>
+<span class="nc" id="L49">    public void setUsers(Set&lt;User&gt; users) { this.users = users; }</span>
+
+    // Helper methods
+    public void addWallet(Wallet wallet) {
+<span class="nc" id="L53">        wallets.add(wallet);</span>
+<span class="nc" id="L54">        wallet.setCurrency(this);</span>
+<span class="nc" id="L55">    }</span>
+
+    public void removeWallet(Wallet wallet) {
+<span class="nc" id="L58">        wallets.remove(wallet);</span>
+<span class="nc" id="L59">        wallet.setCurrency(null);</span>
+<span class="nc" id="L60">    }</span>
+
+    public void addUser(User user) {
+<span class="nc" id="L63">        users.add(user);</span>
+<span class="nc" id="L64">        user.setCurrency(this);</span>
+<span class="nc" id="L65">    }</span>
+
+    public void removeUser(User user) {
+<span class="nc" id="L68">        users.remove(user);</span>
+<span class="nc" id="L69">        user.setCurrency(null);</span>
+<span class="nc" id="L70">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

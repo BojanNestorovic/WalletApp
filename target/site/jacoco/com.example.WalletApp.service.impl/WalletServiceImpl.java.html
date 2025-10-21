@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WalletServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WalletApp</a> &gt; <a href="index.source.html" class="el_package">com.example.WalletApp.service.impl</a> &gt; <span class="el_source">WalletServiceImpl.java</span></div><h1>WalletServiceImpl.java</h1><pre class="source lang-java linenums">package com.example.WalletApp.service.impl;
+
+import com.example.WalletApp.dto.WalletDTO;
+import com.example.WalletApp.entity.Currency;
+import com.example.WalletApp.entity.User;
+import com.example.WalletApp.entity.Wallet;
+import com.example.WalletApp.repository.CurrencyRepository;
+import com.example.WalletApp.repository.UserRepository;
+import com.example.WalletApp.repository.WalletRepository;
+import com.example.WalletApp.service.WalletService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Implementacija servisa za upravljanje novčanicima
+ * 
+ * Ova klasa sadrži poslovne logike vezane za novčanike:
+ * - Kreiranje i ažuriranje novčanika
+ * - Upravljanje balansom novčanika
+ * - Pretragu novčanika po korisniku
+ * - Statistike o novčanicima
+ * - Konverziju između entiteta i DTO objekata
+ * 
+ * @author vuksta
+ * @version 1.0
+ */
+@Service
+@Transactional
+<span class="fc" id="L37">public class WalletServiceImpl implements WalletService {</span>
+    
+    @Autowired
+    private WalletRepository walletRepository;
+    
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
+    private CurrencyRepository currencyRepository;
+    
+    /**
+     * Kreira novi novčanik
+     * 
+     * @param wallet - novčanik koji se kreira
+     * @return sačuvan novčanik sa generisanim ID-jem
+     */
+    @Override
+    public Wallet createWallet(Wallet wallet) {
+<span class="fc" id="L56">        return walletRepository.save(wallet);</span>
+    }
+    
+    /**
+     * Ažurira postojeći novčanik
+     * 
+     * Ne ažurira početni balans, trenutni balans ili datum kreiranja
+     * jer su to nepromenljivi podaci.
+     * 
+     * @param id - ID novčanika koji se ažurira
+     * @param wallet - novi podaci novčanika
+     * @return ažuriran novčanik
+     * @throws RuntimeException ako novčanik ne postoji
+     */
+    @Override
+    public Wallet updateWallet(Long id, Wallet wallet) {
+<span class="fc" id="L72">        Wallet existingWallet = walletRepository.findById(id)</span>
+<span class="fc" id="L73">            .orElseThrow(() -&gt; new RuntimeException(&quot;Wallet not found with id: &quot; + id));</span>
+        
+        // Ažurira samo dozvoljene podatke
+<span class="fc" id="L76">        existingWallet.setName(wallet.getName());</span>
+<span class="fc" id="L77">        existingWallet.setSavings(wallet.isSavings());</span>
+        
+        // Ažurira valutu samo ako je prosleđena
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        if (wallet.getCurrency() != null) {</span>
+<span class="fc" id="L81">            existingWallet.setCurrency(wallet.getCurrency());</span>
+        }
+        
+<span class="fc" id="L84">        return walletRepository.save(existingWallet);</span>
+    }
+    
+    @Override
+    public void deleteWallet(Long id) {
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (!walletRepository.existsById(id)) {</span>
+<span class="fc" id="L90">            throw new RuntimeException(&quot;Wallet not found with id: &quot; + id);</span>
+        }
+<span class="fc" id="L92">        walletRepository.deleteById(id);</span>
+<span class="fc" id="L93">    }</span>
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Optional&lt;Wallet&gt; getWalletById(Long id) {
+<span class="fc" id="L98">        return walletRepository.findById(id);</span>
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Wallet&gt; getAllWallets() {
+<span class="nc" id="L104">        return walletRepository.findAll();</span>
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Page&lt;Wallet&gt; getAllWallets(Pageable pageable) {
+<span class="nc" id="L110">        return walletRepository.findAll(pageable);</span>
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Wallet&gt; getWalletsByUserId(Long userId) {
+<span class="fc" id="L116">        return walletRepository.findByUserId(userId);</span>
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Wallet&gt; getActiveWalletsByUserId(Long userId) {
+<span class="fc" id="L122">        return walletRepository.findActiveWalletsByUserId(userId);</span>
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Wallet&gt; getSavingsWalletsByUserId(Long userId) {
+<span class="fc" id="L128">        return walletRepository.findByUserIdAndSavings(userId, true);</span>
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public BigDecimal getTotalBalanceByUserId(Long userId) {
+<span class="fc" id="L134">        BigDecimal total = walletRepository.getTotalBalanceByUserId(userId);</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">        return total != null ? total : BigDecimal.ZERO;</span>
+    }
+    
+    @Override
+    public void archiveWallet(Long walletId) {
+<span class="fc" id="L140">        Wallet wallet = walletRepository.findById(walletId)</span>
+<span class="pc" id="L141">            .orElseThrow(() -&gt; new RuntimeException(&quot;Wallet not found with id: &quot; + walletId));</span>
+<span class="fc" id="L142">        wallet.archive();</span>
+<span class="fc" id="L143">        walletRepository.save(wallet);</span>
+<span class="fc" id="L144">    }</span>
+    
+    @Override
+    public void unarchiveWallet(Long walletId) {
+<span class="fc" id="L148">        Wallet wallet = walletRepository.findById(walletId)</span>
+<span class="pc" id="L149">            .orElseThrow(() -&gt; new RuntimeException(&quot;Wallet not found with id: &quot; + walletId));</span>
+<span class="fc" id="L150">        wallet.unarchive();</span>
+<span class="fc" id="L151">        walletRepository.save(wallet);</span>
+<span class="fc" id="L152">    }</span>
+    
+    @Override
+    public void addToWalletBalance(Long walletId, BigDecimal amount) {
+<span class="fc" id="L156">        Wallet wallet = walletRepository.findById(walletId)</span>
+<span class="pc" id="L157">            .orElseThrow(() -&gt; new RuntimeException(&quot;Wallet not found with id: &quot; + walletId));</span>
+<span class="fc" id="L158">        wallet.updateBalance(amount);</span>
+<span class="fc" id="L159">        walletRepository.save(wallet);</span>
+<span class="fc" id="L160">    }</span>
+    
+    @Override
+    public void subtractFromWalletBalance(Long walletId, BigDecimal amount) {
+<span class="fc" id="L164">        Wallet wallet = walletRepository.findById(walletId)</span>
+<span class="pc" id="L165">            .orElseThrow(() -&gt; new RuntimeException(&quot;Wallet not found with id: &quot; + walletId));</span>
+        
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        if (wallet.getCurrentBalance().compareTo(amount) &lt; 0) {</span>
+<span class="fc" id="L168">            throw new RuntimeException(&quot;Insufficient balance in wallet: &quot; + walletId);</span>
+        }
+        
+<span class="fc" id="L171">        wallet.updateBalance(amount.negate());</span>
+<span class="fc" id="L172">        walletRepository.save(wallet);</span>
+<span class="fc" id="L173">    }</span>
+    
+    @Override
+    @Transactional(readOnly = true)
+    public BigDecimal getAverageWalletBalance() {
+<span class="fc" id="L178">        BigDecimal average = walletRepository.getAverageWalletBalance();</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">        return average != null ? average : BigDecimal.ZERO;</span>
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public BigDecimal getTotalSystemBalance() {
+<span class="fc" id="L185">        BigDecimal total = walletRepository.getTotalSystemBalance();</span>
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">        return total != null ? total : BigDecimal.ZERO;</span>
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;Wallet&gt; getWalletsByCurrency(Long currencyId) {
+<span class="fc" id="L192">        return walletRepository.findByCurrencyId(currencyId);</span>
+    }
+    
+    /**
+     * Konvertuje Wallet entitet u WalletDTO
+     * 
+     * @param wallet - novčanik entitet
+     * @return WalletDTO objekat
+     */
+    @Override
+    public WalletDTO convertToDTO(Wallet wallet) {
+<span class="fc" id="L203">        WalletDTO dto = new WalletDTO();</span>
+<span class="fc" id="L204">        dto.setId(wallet.getId());</span>
+<span class="fc" id="L205">        dto.setName(wallet.getName());</span>
+<span class="fc" id="L206">        dto.setInitialBalance(wallet.getInitialBalance());</span>
+<span class="fc" id="L207">        dto.setCurrentBalance(wallet.getCurrentBalance());</span>
+<span class="fc" id="L208">        dto.setDateOfCreation(wallet.getDateOfCreation());</span>
+<span class="fc" id="L209">        dto.setSavings(wallet.isSavings());</span>
+<span class="fc" id="L210">        dto.setArchived(wallet.isArchived());</span>
+        
+        // Postavlja ID korisnika ako novčanik ima vlasnika
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">        if (wallet.getUser() != null) {</span>
+<span class="fc" id="L214">            dto.setUserId(wallet.getUser().getId());</span>
+        }
+        
+        // Postavlja ID valute ako novčanik ima valutu
+<span class="pc bpc" id="L218" title="1 of 2 branches missed.">        if (wallet.getCurrency() != null) {</span>
+<span class="fc" id="L219">            dto.setCurrencyId(wallet.getCurrency().getId());</span>
+        }
+        
+<span class="fc" id="L222">        return dto;</span>
+    }
+    
+    /**
+     * Konvertuje WalletDTO u Wallet entitet
+     * 
+     * Ova metoda postavlja default vrednosti za polja koja nisu obavezna:
+     * - Ako trenutni balans nije prosleđen, postavlja se na početni balans
+     * - Ako datum kreiranja nije prosleđen, postavlja se na trenutni datum
+     * 
+     * @param dto - DTO objekat sa podacima novčanika
+     * @return Wallet entitet
+     */
+    @Override
+    public Wallet convertToEntity(WalletDTO dto) {
+<span class="fc" id="L237">        Wallet wallet = new Wallet();</span>
+<span class="fc" id="L238">        wallet.setId(dto.getId());</span>
+<span class="fc" id="L239">        wallet.setName(dto.getName());</span>
+<span class="fc" id="L240">        wallet.setInitialBalance(dto.getInitialBalance());</span>
+        
+        // Postavlja trenutni balans na početni ako nije prosleđen
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">        if (dto.getCurrentBalance() != null) {</span>
+<span class="nc" id="L244">            wallet.setCurrentBalance(dto.getCurrentBalance());</span>
+        } else {
+<span class="fc" id="L246">            wallet.setCurrentBalance(dto.getInitialBalance());</span>
+        }
+        
+        // Postavlja datum kreiranja na trenutni datum ako nije prosleđen
+<span class="pc bpc" id="L250" title="1 of 2 branches missed.">        if (dto.getDateOfCreation() != null) {</span>
+<span class="nc" id="L251">            wallet.setDateOfCreation(dto.getDateOfCreation());</span>
+        } else {
+<span class="fc" id="L253">            wallet.setDateOfCreation(new Date());</span>
+        }
+        
+<span class="fc" id="L256">        wallet.setSavings(dto.isSavings());</span>
+<span class="fc" id="L257">        wallet.setArchived(dto.isArchived());</span>
+        
+        // Postavlja korisnika ako je prosleđen ID korisnika
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">        if (dto.getUserId() != null) {</span>
+<span class="fc" id="L261">            User user = userRepository.findById(dto.getUserId()).orElse(null);</span>
+<span class="fc" id="L262">            wallet.setUser(user);</span>
+        }
+        
+        // Postavlja valutu ako je prosleđen ID valute
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">        if (dto.getCurrencyId() != null) {</span>
+<span class="fc" id="L267">            Currency currency = currencyRepository.findById(dto.getCurrencyId()).orElse(null);</span>
+<span class="fc" id="L268">            wallet.setCurrency(currency);</span>
+        }
+        
+<span class="fc" id="L271">        return wallet;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

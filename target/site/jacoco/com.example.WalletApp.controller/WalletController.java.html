@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WalletController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WalletApp</a> &gt; <a href="index.source.html" class="el_package">com.example.WalletApp.controller</a> &gt; <span class="el_source">WalletController.java</span></div><h1>WalletController.java</h1><pre class="source lang-java linenums">package com.example.WalletApp.controller;
+
+import com.example.WalletApp.dto.WalletDTO;
+import com.example.WalletApp.entity.Wallet;
+import com.example.WalletApp.service.WalletService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * REST kontroler za upravljanje novčanicima
+ * 
+ * Ovaj kontroler pruža API endpoint-e za:
+ * - Kreiranje novih novčanika
+ * - Dohvatanje novčanika po ID-u
+ * - Ažuriranje postojećih novčanika
+ * - Brisanje novčanika
+ * - Dohvatanje novčanika po korisniku
+ * - Upravljanje balansom novčanika
+ * - Statistike i analitiku
+ * 
+ * @author vuksta
+ * @version 1.0
+ */
+@RestController
+@RequestMapping(&quot;/api/wallets&quot;)
+@CrossOrigin(origins = &quot;*&quot;)
+<span class="fc" id="L36">public class WalletController {</span>
+
+    @Autowired
+    private WalletService walletService;
+
+    // Get all wallets
+    @GetMapping
+    public ResponseEntity&lt;List&lt;WalletDTO&gt;&gt; getAllWallets() {
+<span class="fc" id="L44">        List&lt;Wallet&gt; wallets = walletService.getAllWallets();</span>
+<span class="fc" id="L45">        List&lt;WalletDTO&gt; walletDTOs = wallets.stream()</span>
+<span class="fc" id="L46">            .map(walletService::convertToDTO)</span>
+<span class="fc" id="L47">            .toList();</span>
+<span class="fc" id="L48">        return ResponseEntity.ok(walletDTOs);</span>
+    }
+
+    // Get all wallets with pagination
+    @GetMapping(&quot;/page&quot;)
+    public ResponseEntity&lt;Page&lt;WalletDTO&gt;&gt; getAllWallets(Pageable pageable) {
+<span class="fc" id="L54">        Page&lt;Wallet&gt; wallets = walletService.getAllWallets(pageable);</span>
+<span class="fc" id="L55">        Page&lt;WalletDTO&gt; walletDTOs = wallets.map(walletService::convertToDTO);</span>
+<span class="fc" id="L56">        return ResponseEntity.ok(walletDTOs);</span>
+    }
+
+    // Get wallet by ID
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; getWalletById(@PathVariable Long id) {
+<span class="fc" id="L62">        Optional&lt;Wallet&gt; wallet = walletService.getWalletById(id);</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        if (wallet.isPresent()) {</span>
+<span class="fc" id="L64">            WalletDTO walletDTO = walletService.convertToDTO(wallet.get());</span>
+<span class="fc" id="L65">            return ResponseEntity.ok(walletDTO);</span>
+        } else {
+<span class="fc" id="L67">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+    // Create new wallet
+    @PostMapping
+    public ResponseEntity&lt;?&gt; createWallet(@Valid @RequestBody WalletDTO walletDTO) {
+        try {
+<span class="fc" id="L75">            Wallet wallet = walletService.convertToEntity(walletDTO);</span>
+<span class="fc" id="L76">            Wallet createdWallet = walletService.createWallet(wallet);</span>
+<span class="fc" id="L77">            WalletDTO responseDTO = walletService.convertToDTO(createdWallet);</span>
+<span class="fc" id="L78">            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);</span>
+<span class="nc" id="L79">        } catch (Exception e) {</span>
+<span class="nc" id="L80">            return ResponseEntity.badRequest().body(&quot;Error creating wallet: &quot; + e.getMessage());</span>
+        }
+    }
+
+    // Update wallet
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; updateWallet(@PathVariable Long id, @Valid @RequestBody WalletDTO walletDTO) {
+        try {
+<span class="fc" id="L88">            Wallet wallet = walletService.convertToEntity(walletDTO);</span>
+<span class="fc" id="L89">            Wallet updatedWallet = walletService.updateWallet(id, wallet);</span>
+<span class="fc" id="L90">            WalletDTO responseDTO = walletService.convertToDTO(updatedWallet);</span>
+<span class="fc" id="L91">            return ResponseEntity.ok(responseDTO);</span>
+<span class="nc" id="L92">        } catch (Exception e) {</span>
+<span class="nc" id="L93">            return ResponseEntity.badRequest().body(&quot;Error updating wallet: &quot; + e.getMessage());</span>
+        }
+    }
+
+    // Delete wallet
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; deleteWallet(@PathVariable Long id) {
+        try {
+<span class="fc" id="L101">            walletService.deleteWallet(id);</span>
+<span class="fc" id="L102">            return ResponseEntity.ok().body(&quot;Wallet deleted successfully&quot;);</span>
+<span class="nc" id="L103">        } catch (Exception e) {</span>
+<span class="nc" id="L104">            return ResponseEntity.badRequest().body(&quot;Error deleting wallet: &quot; + e.getMessage());</span>
+        }
+    }
+
+    // Get wallets by user ID
+    @GetMapping(&quot;/user/{userId}&quot;)
+    public ResponseEntity&lt;List&lt;WalletDTO&gt;&gt; getWalletsByUserId(@PathVariable Long userId) {
+<span class="fc" id="L111">        List&lt;Wallet&gt; wallets = walletService.getWalletsByUserId(userId);</span>
+<span class="fc" id="L112">        List&lt;WalletDTO&gt; walletDTOs = wallets.stream()</span>
+<span class="fc" id="L113">            .map(walletService::convertToDTO)</span>
+<span class="fc" id="L114">            .toList();</span>
+<span class="fc" id="L115">        return ResponseEntity.ok(walletDTOs);</span>
+    }
+
+    // Get active wallets by user ID
+    @GetMapping(&quot;/user/{userId}/active&quot;)
+    public ResponseEntity&lt;List&lt;WalletDTO&gt;&gt; getActiveWalletsByUserId(@PathVariable Long userId) {
+<span class="fc" id="L121">        List&lt;Wallet&gt; wallets = walletService.getActiveWalletsByUserId(userId);</span>
+<span class="fc" id="L122">        List&lt;WalletDTO&gt; walletDTOs = wallets.stream()</span>
+<span class="fc" id="L123">            .map(walletService::convertToDTO)</span>
+<span class="fc" id="L124">            .toList();</span>
+<span class="fc" id="L125">        return ResponseEntity.ok(walletDTOs);</span>
+    }
+
+    // Get savings wallets by user ID
+    @GetMapping(&quot;/user/{userId}/savings&quot;)
+    public ResponseEntity&lt;List&lt;WalletDTO&gt;&gt; getSavingsWalletsByUserId(@PathVariable Long userId) {
+<span class="fc" id="L131">        List&lt;Wallet&gt; wallets = walletService.getSavingsWalletsByUserId(userId);</span>
+<span class="fc" id="L132">        List&lt;WalletDTO&gt; walletDTOs = wallets.stream()</span>
+<span class="fc" id="L133">            .map(walletService::convertToDTO)</span>
+<span class="fc" id="L134">            .toList();</span>
+<span class="fc" id="L135">        return ResponseEntity.ok(walletDTOs);</span>
+    }
+
+    // Get total balance by user ID
+    @GetMapping(&quot;/user/{userId}/balance&quot;)
+    public ResponseEntity&lt;?&gt; getTotalBalanceByUserId(@PathVariable Long userId) {
+<span class="fc" id="L141">        BigDecimal totalBalance = walletService.getTotalBalanceByUserId(userId);</span>
+<span class="fc" id="L142">        return ResponseEntity.ok().body(&quot;Total balance: &quot; + totalBalance);</span>
+    }
+
+    // Archive wallet
+    @PostMapping(&quot;/{id}/archive&quot;)
+    public ResponseEntity&lt;?&gt; archiveWallet(@PathVariable Long id) {
+        try {
+<span class="fc" id="L149">            walletService.archiveWallet(id);</span>
+<span class="fc" id="L150">            return ResponseEntity.ok().body(&quot;Wallet archived successfully&quot;);</span>
+<span class="nc" id="L151">        } catch (Exception e) {</span>
+<span class="nc" id="L152">            return ResponseEntity.badRequest().body(&quot;Error archiving wallet: &quot; + e.getMessage());</span>
+        }
+    }
+
+    // Unarchive wallet
+    @PostMapping(&quot;/{id}/unarchive&quot;)
+    public ResponseEntity&lt;?&gt; unarchiveWallet(@PathVariable Long id) {
+        try {
+<span class="fc" id="L160">            walletService.unarchiveWallet(id);</span>
+<span class="fc" id="L161">            return ResponseEntity.ok().body(&quot;Wallet unarchived successfully&quot;);</span>
+<span class="nc" id="L162">        } catch (Exception e) {</span>
+<span class="nc" id="L163">            return ResponseEntity.badRequest().body(&quot;Error unarchiving wallet: &quot; + e.getMessage());</span>
+        }
+    }
+
+    // Add to wallet balance
+    @PostMapping(&quot;/{id}/add&quot;)
+    public ResponseEntity&lt;?&gt; addToWalletBalance(@PathVariable Long id, @RequestParam BigDecimal amount) {
+        try {
+<span class="fc" id="L171">            walletService.addToWalletBalance(id, amount);</span>
+<span class="fc" id="L172">            return ResponseEntity.ok().body(&quot;Amount added successfully&quot;);</span>
+<span class="nc" id="L173">        } catch (Exception e) {</span>
+<span class="nc" id="L174">            return ResponseEntity.badRequest().body(&quot;Error adding amount: &quot; + e.getMessage());</span>
+        }
+    }
+
+    // Subtract from wallet balance
+    @PostMapping(&quot;/{id}/subtract&quot;)
+    public ResponseEntity&lt;?&gt; subtractFromWalletBalance(@PathVariable Long id, @RequestParam BigDecimal amount) {
+        try {
+<span class="fc" id="L182">            walletService.subtractFromWalletBalance(id, amount);</span>
+<span class="fc" id="L183">            return ResponseEntity.ok().body(&quot;Amount subtracted successfully&quot;);</span>
+<span class="nc" id="L184">        } catch (Exception e) {</span>
+<span class="nc" id="L185">            return ResponseEntity.badRequest().body(&quot;Error subtracting amount: &quot; + e.getMessage());</span>
+        }
+    }
+
+    // Get wallet statistics
+    @GetMapping(&quot;/stats&quot;)
+    public ResponseEntity&lt;?&gt; getWalletStats() {
+<span class="fc" id="L192">        BigDecimal averageBalance = walletService.getAverageWalletBalance();</span>
+<span class="fc" id="L193">        BigDecimal totalSystemBalance = walletService.getTotalSystemBalance();</span>
+        
+<span class="fc" id="L195">        return ResponseEntity.ok().body(String.format(</span>
+            &quot;Average Wallet Balance: %s, Total System Balance: %s&quot;, 
+            averageBalance, totalSystemBalance));
+    }
+
+    // Get wallets by currency
+    @GetMapping(&quot;/currency/{currencyId}&quot;)
+    public ResponseEntity&lt;List&lt;WalletDTO&gt;&gt; getWalletsByCurrency(@PathVariable Long currencyId) {
+<span class="fc" id="L203">        List&lt;Wallet&gt; wallets = walletService.getWalletsByCurrency(currencyId);</span>
+<span class="fc" id="L204">        List&lt;WalletDTO&gt; walletDTOs = wallets.stream()</span>
+<span class="fc" id="L205">            .map(walletService::convertToDTO)</span>
+<span class="fc" id="L206">            .toList();</span>
+<span class="fc" id="L207">        return ResponseEntity.ok(walletDTOs);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

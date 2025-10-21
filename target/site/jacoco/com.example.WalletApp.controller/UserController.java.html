@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WalletApp</a> &gt; <a href="index.source.html" class="el_package">com.example.WalletApp.controller</a> &gt; <span class="el_source">UserController.java</span></div><h1>UserController.java</h1><pre class="source lang-java linenums">package com.example.WalletApp.controller;
+
+import com.example.WalletApp.dto.UserDTO;
+import com.example.WalletApp.entity.User;
+import com.example.WalletApp.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * REST kontroler za upravljanje korisnicima
+ * 
+ * Ovaj kontroler pruža API endpoint-e za:
+ * - Dohvatanje svih korisnika
+ * - Dohvatanje korisnika po ID-u
+ * - Kreiranje novih korisnika
+ * - Ažuriranje postojećih korisnika
+ * - Brisanje korisnika
+ * - Pretragu korisnika sa paginacijom
+ * - Upravljanje statusom korisnika
+ * 
+ * @author vuksta
+ * @version 1.0
+ */
+@RestController
+@RequestMapping(&quot;/api/users&quot;)
+@CrossOrigin(origins = &quot;*&quot;)
+<span class="fc" id="L34">public class UserController {</span>
+
+    @Autowired
+    private UserService userService;
+
+    // Get all users
+    @GetMapping
+    public ResponseEntity&lt;List&lt;UserDTO&gt;&gt; getAllUsers() {
+<span class="fc" id="L42">        List&lt;User&gt; users = userService.getAllUsers();</span>
+<span class="fc" id="L43">        List&lt;UserDTO&gt; userDTOs = users.stream()</span>
+<span class="fc" id="L44">            .map(userService::convertToDTO)</span>
+<span class="fc" id="L45">            .toList();</span>
+<span class="fc" id="L46">        return ResponseEntity.ok(userDTOs);</span>
+    }
+
+    // Get all users with pagination
+    @GetMapping(&quot;/page&quot;)
+    public ResponseEntity&lt;Page&lt;UserDTO&gt;&gt; getAllUsers(Pageable pageable) {
+<span class="fc" id="L52">        Page&lt;User&gt; users = userService.getAllUsers(pageable);</span>
+<span class="fc" id="L53">        Page&lt;UserDTO&gt; userDTOs = users.map(userService::convertToDTO);</span>
+<span class="fc" id="L54">        return ResponseEntity.ok(userDTOs);</span>
+    }
+
+    // Get user by ID
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; getUserById(@PathVariable Long id) {
+<span class="fc" id="L60">        Optional&lt;User&gt; user = userService.getUserById(id);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if (user.isPresent()) {</span>
+<span class="fc" id="L62">            UserDTO userDTO = userService.convertToDTO(user.get());</span>
+<span class="fc" id="L63">            return ResponseEntity.ok(userDTO);</span>
+        } else {
+<span class="fc" id="L65">            return ResponseEntity.notFound().build();</span>
+        }
+    }
+
+    // Update user
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; updateUser(@PathVariable Long id, @Valid @RequestBody UserDTO userDTO) {
+        try {
+<span class="fc" id="L73">            User user = userService.convertToEntity(userDTO);</span>
+<span class="fc" id="L74">            User updatedUser = userService.updateUser(id, user);</span>
+<span class="fc" id="L75">            UserDTO responseDTO = userService.convertToDTO(updatedUser);</span>
+<span class="fc" id="L76">            return ResponseEntity.ok(responseDTO);</span>
+<span class="nc" id="L77">        } catch (Exception e) {</span>
+<span class="nc" id="L78">            return ResponseEntity.badRequest().body(&quot;Error updating user: &quot; + e.getMessage());</span>
+        }
+    }
+
+    // Delete user
+    @DeleteMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;?&gt; deleteUser(@PathVariable Long id) {
+        try {
+<span class="fc" id="L86">            userService.deleteUser(id);</span>
+<span class="fc" id="L87">            return ResponseEntity.ok().body(&quot;User deleted successfully&quot;);</span>
+<span class="nc" id="L88">        } catch (Exception e) {</span>
+<span class="nc" id="L89">            return ResponseEntity.badRequest().body(&quot;Error deleting user: &quot; + e.getMessage());</span>
+        }
+    }
+
+    // Get users by role
+    @GetMapping(&quot;/role/{role}&quot;)
+    public ResponseEntity&lt;List&lt;UserDTO&gt;&gt; getUsersByRole(@PathVariable String role) {
+<span class="fc" id="L96">        List&lt;User&gt; users = userService.getUsersByRole(role);</span>
+<span class="fc" id="L97">        List&lt;UserDTO&gt; userDTOs = users.stream()</span>
+<span class="fc" id="L98">            .map(userService::convertToDTO)</span>
+<span class="fc" id="L99">            .toList();</span>
+<span class="fc" id="L100">        return ResponseEntity.ok(userDTOs);</span>
+    }
+
+    // Get blocked users
+    @GetMapping(&quot;/blocked&quot;)
+    public ResponseEntity&lt;List&lt;UserDTO&gt;&gt; getBlockedUsers() {
+<span class="fc" id="L106">        List&lt;User&gt; users = userService.getBlockedUsers();</span>
+<span class="fc" id="L107">        List&lt;UserDTO&gt; userDTOs = users.stream()</span>
+<span class="fc" id="L108">            .map(userService::convertToDTO)</span>
+<span class="fc" id="L109">            .toList();</span>
+<span class="fc" id="L110">        return ResponseEntity.ok(userDTOs);</span>
+    }
+
+    // Get active users
+    @GetMapping(&quot;/active&quot;)
+    public ResponseEntity&lt;List&lt;UserDTO&gt;&gt; getActiveUsers() {
+<span class="fc" id="L116">        List&lt;User&gt; users = userService.getActiveUsers();</span>
+<span class="fc" id="L117">        List&lt;UserDTO&gt; userDTOs = users.stream()</span>
+<span class="fc" id="L118">            .map(userService::convertToDTO)</span>
+<span class="fc" id="L119">            .toList();</span>
+<span class="fc" id="L120">        return ResponseEntity.ok(userDTOs);</span>
+    }
+
+    // Get user statistics
+    @GetMapping(&quot;/stats&quot;)
+    public ResponseEntity&lt;?&gt; getUserStats() {
+<span class="fc" id="L126">        long totalUsers = userService.getTotalUserCount();</span>
+<span class="fc" id="L127">        long activeUsers = userService.getActiveUserCount();</span>
+<span class="fc" id="L128">        long blockedUsers = totalUsers - activeUsers;</span>
+        
+<span class="fc" id="L130">        return ResponseEntity.ok().body(String.format(</span>
+            &quot;Total Users: %d, Active Users: %d, Blocked Users: %d&quot;, 
+<span class="fc" id="L132">            totalUsers, activeUsers, blockedUsers));</span>
+    }
+
+    // Search users by name
+    @GetMapping(&quot;/search&quot;)
+    public ResponseEntity&lt;List&lt;UserDTO&gt;&gt; searchUsers(@RequestParam String name) {
+<span class="fc" id="L138">        List&lt;User&gt; users = userService.searchUsersByName(name);</span>
+<span class="fc" id="L139">        List&lt;UserDTO&gt; userDTOs = users.stream()</span>
+<span class="fc" id="L140">            .map(userService::convertToDTO)</span>
+<span class="fc" id="L141">            .toList();</span>
+<span class="fc" id="L142">        return ResponseEntity.ok(userDTOs);</span>
+    }
+
+    // Block user
+    @PostMapping(&quot;/{id}/block&quot;)
+    public ResponseEntity&lt;?&gt; blockUser(@PathVariable Long id) {
+        try {
+<span class="fc" id="L149">            userService.blockUser(id);</span>
+<span class="fc" id="L150">            return ResponseEntity.ok().body(&quot;User blocked successfully&quot;);</span>
+<span class="nc" id="L151">        } catch (Exception e) {</span>
+<span class="nc" id="L152">            return ResponseEntity.badRequest().body(&quot;Error blocking user: &quot; + e.getMessage());</span>
+        }
+    }
+
+    // Unblock user
+    @PostMapping(&quot;/{id}/unblock&quot;)
+    public ResponseEntity&lt;?&gt; unblockUser(@PathVariable Long id) {
+        try {
+<span class="fc" id="L160">            userService.unblockUser(id);</span>
+<span class="fc" id="L161">            return ResponseEntity.ok().body(&quot;User unblocked successfully&quot;);</span>
+<span class="nc" id="L162">        } catch (Exception e) {</span>
+<span class="nc" id="L163">            return ResponseEntity.badRequest().body(&quot;Error unblocking user: &quot; + e.getMessage());</span>
+        }
+    }
+
+    // Update user currency
+    @PutMapping(&quot;/{id}/currency&quot;)
+    public ResponseEntity&lt;?&gt; updateUserCurrency(@PathVariable Long id, @RequestParam Long currencyId) {
+        try {
+<span class="fc" id="L171">            userService.updateUserCurrency(id, currencyId);</span>
+<span class="fc" id="L172">            return ResponseEntity.ok().body(&quot;User currency updated successfully&quot;);</span>
+<span class="nc" id="L173">        } catch (Exception e) {</span>
+<span class="nc" id="L174">            return ResponseEntity.badRequest().body(&quot;Error updating user currency: &quot; + e.getMessage());</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

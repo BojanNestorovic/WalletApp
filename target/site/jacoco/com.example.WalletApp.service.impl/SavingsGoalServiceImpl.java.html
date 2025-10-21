@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SavingsGoalServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WalletApp</a> &gt; <a href="index.source.html" class="el_package">com.example.WalletApp.service.impl</a> &gt; <span class="el_source">SavingsGoalServiceImpl.java</span></div><h1>SavingsGoalServiceImpl.java</h1><pre class="source lang-java linenums">package com.example.WalletApp.service.impl;
+
+import com.example.WalletApp.dto.SavingsGoalDTO;
+import com.example.WalletApp.entity.SavingsGoal;
+import com.example.WalletApp.entity.User;
+import com.example.WalletApp.entity.Wallet;
+import com.example.WalletApp.repository.SavingsGoalRepository;
+import com.example.WalletApp.repository.UserRepository;
+import com.example.WalletApp.repository.WalletRepository;
+import com.example.WalletApp.service.SavingsGoalService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+@Transactional
+<span class="fc" id="L24">public class SavingsGoalServiceImpl implements SavingsGoalService {</span>
+    
+    @Autowired
+    private SavingsGoalRepository savingsGoalRepository;
+    
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
+    private WalletRepository walletRepository;
+    
+    @Override
+    public SavingsGoal createSavingsGoal(SavingsGoal savingsGoal) {
+<span class="fc" id="L37">        return savingsGoalRepository.save(savingsGoal);</span>
+    }
+    
+    @Override
+    public SavingsGoal updateSavingsGoal(Long id, SavingsGoal savingsGoal) {
+<span class="fc" id="L42">        SavingsGoal existingGoal = savingsGoalRepository.findById(id)</span>
+<span class="fc" id="L43">            .orElseThrow(() -&gt; new RuntimeException(&quot;Savings goal not found with id: &quot; + id));</span>
+        
+<span class="fc" id="L45">        existingGoal.setName(savingsGoal.getName());</span>
+<span class="fc" id="L46">        existingGoal.setTargetAmount(savingsGoal.getTargetAmount());</span>
+<span class="fc" id="L47">        existingGoal.setTargetDate(savingsGoal.getTargetDate());</span>
+        
+<span class="fc" id="L49">        return savingsGoalRepository.save(existingGoal);</span>
+    }
+    
+    @Override
+    public void deleteSavingsGoal(Long id) {
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if (!savingsGoalRepository.existsById(id)) {</span>
+<span class="fc" id="L55">            throw new RuntimeException(&quot;Savings goal not found with id: &quot; + id);</span>
+        }
+<span class="fc" id="L57">        savingsGoalRepository.deleteById(id);</span>
+<span class="fc" id="L58">    }</span>
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Optional&lt;SavingsGoal&gt; getSavingsGoalById(Long id) {
+<span class="fc" id="L63">        return savingsGoalRepository.findById(id);</span>
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;SavingsGoal&gt; getAllSavingsGoals() {
+<span class="nc" id="L69">        return savingsGoalRepository.findAll();</span>
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Page&lt;SavingsGoal&gt; getAllSavingsGoals(Pageable pageable) {
+<span class="nc" id="L75">        return savingsGoalRepository.findAll(pageable);</span>
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;SavingsGoal&gt; getSavingsGoalsByUserId(Long userId) {
+<span class="fc" id="L81">        return savingsGoalRepository.findByUserId(userId);</span>
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;SavingsGoal&gt; getSavingsGoalsByWalletId(Long walletId) {
+<span class="fc" id="L87">        return savingsGoalRepository.findByWalletId(walletId);</span>
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;SavingsGoal&gt; getCompletedSavingsGoals(Long userId) {
+<span class="fc" id="L93">        return savingsGoalRepository.findByUserIdAndCompleted(userId, true);</span>
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;SavingsGoal&gt; getActiveSavingsGoals(Long userId) {
+<span class="fc" id="L99">        return savingsGoalRepository.findByUserIdAndCompleted(userId, false);</span>
+    }
+    
+    @Override
+    public void addToSavingsGoal(Long goalId, BigDecimal amount) {
+<span class="fc" id="L104">        SavingsGoal goal = savingsGoalRepository.findById(goalId)</span>
+<span class="fc" id="L105">            .orElseThrow(() -&gt; new RuntimeException(&quot;Savings goal not found with id: &quot; + goalId));</span>
+        
+<span class="fc" id="L107">        goal.addAmount(amount);</span>
+<span class="fc" id="L108">        savingsGoalRepository.save(goal);</span>
+<span class="fc" id="L109">    }</span>
+    
+    @Override
+    public void completeSavingsGoal(Long goalId) {
+<span class="fc" id="L113">        SavingsGoal goal = savingsGoalRepository.findById(goalId)</span>
+<span class="fc" id="L114">            .orElseThrow(() -&gt; new RuntimeException(&quot;Savings goal not found with id: &quot; + goalId));</span>
+        
+<span class="fc" id="L116">        goal.setCompleted(true);</span>
+<span class="fc" id="L117">        savingsGoalRepository.save(goal);</span>
+<span class="fc" id="L118">    }</span>
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;SavingsGoal&gt; getOverdueGoals(Long userId) {
+<span class="fc" id="L123">        return savingsGoalRepository.findByUserId(userId).stream()</span>
+<span class="fc" id="L124">            .filter(SavingsGoal::isOverdue)</span>
+<span class="fc" id="L125">            .toList();</span>
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;SavingsGoal&gt; getGoalsByDateRange(Long userId, Date startDate, Date endDate) {
+<span class="fc" id="L131">        return savingsGoalRepository.findByUserIdAndTargetDateBetween(userId, startDate, endDate);</span>
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public BigDecimal getTotalSavingsByUserId(Long userId) {
+<span class="fc" id="L137">        return savingsGoalRepository.findByUserId(userId).stream()</span>
+<span class="fc" id="L138">            .map(SavingsGoal::getCurrentAmount)</span>
+<span class="fc" id="L139">            .reduce(BigDecimal.ZERO, BigDecimal::add);</span>
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public BigDecimal getTotalTargetAmountByUserId(Long userId) {
+<span class="fc" id="L145">        return savingsGoalRepository.findByUserId(userId).stream()</span>
+<span class="fc" id="L146">            .map(SavingsGoal::getTargetAmount)</span>
+<span class="fc" id="L147">            .reduce(BigDecimal.ZERO, BigDecimal::add);</span>
+    }
+    
+    @Override
+    public SavingsGoalDTO convertToDTO(SavingsGoal savingsGoal) {
+<span class="fc" id="L152">        SavingsGoalDTO dto = new SavingsGoalDTO();</span>
+<span class="fc" id="L153">        dto.setId(savingsGoal.getId());</span>
+<span class="fc" id="L154">        dto.setName(savingsGoal.getName());</span>
+<span class="fc" id="L155">        dto.setTargetAmount(savingsGoal.getTargetAmount());</span>
+<span class="fc" id="L156">        dto.setCurrentAmount(savingsGoal.getCurrentAmount());</span>
+<span class="fc" id="L157">        dto.setTargetDate(savingsGoal.getTargetDate());</span>
+<span class="fc" id="L158">        dto.setDateOfCreation(savingsGoal.getDateOfCreation());</span>
+<span class="fc" id="L159">        dto.setCompleted(savingsGoal.isCompleted());</span>
+        
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">        if (savingsGoal.getWallet() != null) {</span>
+<span class="fc" id="L162">            dto.setWalletId(savingsGoal.getWallet().getId());</span>
+        }
+        
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">        if (savingsGoal.getUser() != null) {</span>
+<span class="fc" id="L166">            dto.setUserId(savingsGoal.getUser().getId());</span>
+        }
+        
+<span class="fc" id="L169">        return dto;</span>
+    }
+    
+    @Override
+    public SavingsGoal convertToEntity(SavingsGoalDTO dto) {
+<span class="fc" id="L174">        SavingsGoal savingsGoal = new SavingsGoal();</span>
+<span class="fc" id="L175">        savingsGoal.setId(dto.getId());</span>
+<span class="fc" id="L176">        savingsGoal.setName(dto.getName());</span>
+<span class="fc" id="L177">        savingsGoal.setTargetAmount(dto.getTargetAmount());</span>
+        // Set currentAmount to zero if not provided
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">        if (dto.getCurrentAmount() != null) {</span>
+<span class="nc" id="L180">            savingsGoal.setCurrentAmount(dto.getCurrentAmount());</span>
+        } else {
+<span class="fc" id="L182">            savingsGoal.setCurrentAmount(BigDecimal.ZERO);</span>
+        }
+<span class="fc" id="L184">        savingsGoal.setTargetDate(dto.getTargetDate());</span>
+        // Set dateOfCreation to current date if not provided
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">        if (dto.getDateOfCreation() != null) {</span>
+<span class="nc" id="L187">            savingsGoal.setDateOfCreation(dto.getDateOfCreation());</span>
+        } else {
+<span class="fc" id="L189">            savingsGoal.setDateOfCreation(new Date());</span>
+        }
+<span class="fc" id="L191">        savingsGoal.setCompleted(dto.isCompleted());</span>
+        
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">        if (dto.getWalletId() != null) {</span>
+<span class="fc" id="L194">            Wallet wallet = walletRepository.findById(dto.getWalletId()).orElse(null);</span>
+<span class="fc" id="L195">            savingsGoal.setWallet(wallet);</span>
+        }
+        
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">        if (dto.getUserId() != null) {</span>
+<span class="fc" id="L199">            User user = userRepository.findById(dto.getUserId()).orElse(null);</span>
+<span class="fc" id="L200">            savingsGoal.setUser(user);</span>
+        }
+        
+<span class="fc" id="L203">        return savingsGoal;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -157,8 +157,3 @@ public class User implements Serializable {
         savingsGoal.setUser(this);
     }
 }
-
-// Enum definitions
-enum Role {
-    USER, ADMINISTRATOR
-}

@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WalletApp</a> &gt; <a href="index.source.html" class="el_package">com.example.WalletApp.service.impl</a> &gt; <span class="el_source">UserServiceImpl.java</span></div><h1>UserServiceImpl.java</h1><pre class="source lang-java linenums">package com.example.WalletApp.service.impl;
+
+import com.example.WalletApp.dto.UserDTO;
+import com.example.WalletApp.entity.Currency;
+import com.example.WalletApp.entity.Role;
+import com.example.WalletApp.entity.User;
+import com.example.WalletApp.exception.ValidationException;
+import com.example.WalletApp.repository.CurrencyRepository;
+import com.example.WalletApp.repository.UserRepository;
+import com.example.WalletApp.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Implementacija servisa za upravljanje korisnicima
+ * 
+ * Ova klasa sadrži sve poslovne logike vezane za korisnike:
+ * - Registraciju novih korisnika
+ * - Ažuriranje postojećih korisnika
+ * - Brisanje korisnika
+ * - Pretragu i filtriranje korisnika
+ * - Upravljanje statusom korisnika (blokiranje/odblokiranje)
+ * - Konverziju između entiteta i DTO objekata
+ * 
+ * @author vuksta
+ * @version 1.0
+ */
+@Service
+@Transactional
+<span class="fc" id="L36">public class UserServiceImpl implements UserService {</span>
+    
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
+    private CurrencyRepository currencyRepository;
+    
+    /**
+     * Registruje novog korisnika u sistem
+     * 
+     * Pre čuvanja korisnika, proverava da li korisničko ime i email već postoje.
+     * Ovo je važno za održavanje jedinstvenosti podataka u bazi.
+     * 
+     * @param user - korisnik koji se registruje
+     * @return sačuvan korisnik sa generisanim ID-jem
+     * @throws RuntimeException ako korisničko ime ili email već postoje
+     */
+    @Override
+    public User registerUser(User user) {
+        // Proverava jedinstvenost korisničkog imena
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        if (userRepository.existsByUsername(user.getUsername())) {</span>
+<span class="fc" id="L58">            throw new RuntimeException(&quot;Username already exists&quot;);</span>
+        }
+        // Proverava jedinstvenost email adrese
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if (userRepository.existsByEmail(user.getEmail())) {</span>
+<span class="fc" id="L62">            throw new RuntimeException(&quot;Email already exists&quot;);</span>
+        }
+<span class="fc" id="L64">        return userRepository.save(user);</span>
+    }
+    
+    /**
+     * Ažurira postojećeg korisnika
+     * 
+     * Metoda pronalazi korisnika po ID-u i ažurira njegove podatke.
+     * Ne ažurira korisničko ime, lozinku ili datum registracije jer su to
+     * nepromenljivi podaci.
+     * 
+     * @param id - ID korisnika koji se ažurira
+     * @param user - novi podaci korisnika
+     * @return ažuriran korisnik
+     * @throws RuntimeException ako korisnik sa datim ID-jem ne postoji
+     */
+    @Override
+    public User updateUser(Long id, User user) {
+        // Pronalazi postojećeg korisnika ili baca izuzetak
+<span class="nc" id="L82">        User existingUser = userRepository.findById(id)</span>
+<span class="nc" id="L83">            .orElseThrow(() -&gt; new RuntimeException(&quot;User not found with id: &quot; + id));</span>
+        
+        // Ažurira samo dozvoljene podatke
+<span class="nc" id="L86">        existingUser.setFirstName(user.getFirstName());</span>
+<span class="nc" id="L87">        existingUser.setLastName(user.getLastName());</span>
+<span class="nc" id="L88">        existingUser.setEmail(user.getEmail());</span>
+<span class="nc" id="L89">        existingUser.setBirthDate(user.getBirthDate());</span>
+<span class="nc" id="L90">        existingUser.setImageLink(user.getImageLink());</span>
+        
+        // Ažurira valutu samo ako je prosleđena
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        if (user.getCurrency() != null) {</span>
+<span class="nc" id="L94">            existingUser.setCurrency(user.getCurrency());</span>
+        }
+        
+<span class="nc" id="L97">        return userRepository.save(existingUser);</span>
+    }
+    
+    /**
+     * Briše korisnika iz sistema
+     * 
+     * @param id - ID korisnika koji se briše
+     * @throws RuntimeException ako korisnik sa datim ID-jem ne postoji
+     */
+    @Override
+    public void deleteUser(Long id) {
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (!userRepository.existsById(id)) {</span>
+<span class="nc" id="L109">            throw new RuntimeException(&quot;User not found with id: &quot; + id);</span>
+        }
+<span class="nc" id="L111">        userRepository.deleteById(id);</span>
+<span class="nc" id="L112">    }</span>
+    
+    /**
+     * Pronalazi korisnika po ID-u
+     * 
+     * @param id - ID korisnika
+     * @return Optional&lt;User&gt; - korisnik ako postoji, prazan Optional ako ne
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Optional&lt;User&gt; getUserById(Long id) {
+<span class="fc" id="L123">        return userRepository.findById(id);</span>
+    }
+    
+    /**
+     * Vraća sve korisnike iz baze
+     * 
+     * @return lista svih korisnika
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;User&gt; getAllUsers() {
+<span class="fc" id="L134">        return userRepository.findAll();</span>
+    }
+    
+    /**
+     * Vraća korisnike sa paginacijom
+     * 
+     * Paginacija omogućava efikasno učitavanje velikog broja korisnika
+     * po stranicama umesto odjednom.
+     * 
+     * @param pageable - parametri paginacije (broj stranice, veličina stranice)
+     * @return stranica korisnika
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page&lt;User&gt; getAllUsers(Pageable pageable) {
+<span class="nc" id="L149">        return userRepository.findAll(pageable);</span>
+    }
+    
+    /**
+     * Validira korisničke podatke za prijavu
+     * 
+     * Proverava da li korisničko ime i lozinka odgovaraju onima u bazi.
+     * Ova metoda se koristi za autentifikaciju korisnika.
+     * 
+     * @param username - korisničko ime
+     * @param password - lozinka
+     * @return true ako su podaci ispravni, false ako nisu
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public boolean validateUserCredentials(String username, String password) {
+<span class="fc" id="L165">        Optional&lt;User&gt; user = userRepository.findByUsername(username);</span>
+<span class="fc bfc" id="L166" title="All 4 branches covered.">        return user.isPresent() &amp;&amp; user.get().getPassword().equals(password);</span>
+    }
+    
+    /**
+     * Pronalazi korisnika po korisničkom imenu
+     * 
+     * @param username - korisničko ime
+     * @return Optional&lt;User&gt; - korisnik ako postoji
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Optional&lt;User&gt; findByUsername(String username) {
+<span class="nc" id="L178">        return userRepository.findByUsername(username);</span>
+    }
+    
+    /**
+     * Pronalazi korisnika po email adresi
+     * 
+     * @param email - email adresa
+     * @return Optional&lt;User&gt; - korisnik ako postoji
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Optional&lt;User&gt; findByEmail(String email) {
+<span class="nc" id="L190">        return userRepository.findByEmail(email);</span>
+    }
+    
+    /**
+     * Vraća korisnike sa određenom ulogom
+     * 
+     * Konvertuje string uloge u enum vrednost i pronalazi sve korisnike
+     * sa tom ulogom. Ovo je korisno za filtriranje korisnika po privilegijama.
+     * 
+     * @param role - uloga korisnika (USER, ADMINISTRATOR)
+     * @return lista korisnika sa datom ulogom
+     * @throws ValidationException ako je uloga neispravna
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;User&gt; getUsersByRole(String role) {
+        try {
+            // Konvertuje string u enum vrednost
+<span class="fc" id="L208">            Role roleEnum = Role.valueOf(role.toUpperCase());</span>
+<span class="fc" id="L209">            return userRepository.findByRole(roleEnum);</span>
+<span class="nc" id="L210">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L211">            throw new ValidationException(&quot;Invalid role: &quot; + role);</span>
+        }
+    }
+    
+    /**
+     * Vraća sve blokirane korisnike
+     * 
+     * @return lista blokiranih korisnika
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;User&gt; getBlockedUsers() {
+<span class="nc" id="L223">        return userRepository.findByBlocked(true);</span>
+    }
+    
+    /**
+     * Vraća sve aktivne (neblokirane) korisnike
+     * 
+     * @return lista aktivnih korisnika
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;User&gt; getActiveUsers() {
+<span class="nc" id="L234">        return userRepository.findByBlocked(false);</span>
+    }
+    
+    /**
+     * Vraća ukupan broj korisnika u sistemu
+     * 
+     * @return broj svih korisnika
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public long getTotalUserCount() {
+<span class="fc" id="L245">        return userRepository.countAllUsers();</span>
+    }
+    
+    /**
+     * Vraća broj aktivnih korisnika
+     * 
+     * @return broj aktivnih korisnika
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public long getActiveUserCount() {
+<span class="fc" id="L256">        return userRepository.countActiveUsers();</span>
+    }
+    
+    /**
+     * Vraća korisnike registrovane nakon određenog datuma
+     * 
+     * @param date - datum od koga se traže korisnici
+     * @return lista korisnika registrovana nakon datuma
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;User&gt; getUsersRegisteredAfter(java.util.Date date) {
+<span class="nc" id="L268">        return userRepository.findUsersRegisteredAfter(date);</span>
+    }
+    
+    /**
+     * Pretražuje korisnike po imenu ili prezimenu
+     * 
+     * Pretraga je case-insensitive i pronalazi korisnike čije ime ili prezime
+     * sadrži zadati termin.
+     * 
+     * @param searchTerm - termin za pretragu
+     * @return lista korisnika koji odgovaraju pretrazi
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List&lt;User&gt; searchUsersByName(String searchTerm) {
+<span class="fc" id="L283">        return userRepository.findByFirstNameOrLastNameContaining(searchTerm);</span>
+    }
+    
+    /**
+     * Blokira korisnika
+     * 
+     * Blokiran korisnik ne može da se prijavi u sistem.
+     * 
+     * @param userId - ID korisnika koji se blokira
+     * @throws RuntimeException ako korisnik ne postoji
+     */
+    @Override
+    public void blockUser(Long userId) {
+<span class="fc" id="L296">        User user = userRepository.findById(userId)</span>
+<span class="pc" id="L297">            .orElseThrow(() -&gt; new RuntimeException(&quot;User not found with id: &quot; + userId));</span>
+<span class="fc" id="L298">        user.setBlocked(true);</span>
+<span class="fc" id="L299">        userRepository.save(user);</span>
+<span class="fc" id="L300">    }</span>
+    
+    /**
+     * Odblokira korisnika
+     * 
+     * @param userId - ID korisnika koji se odblokira
+     * @throws RuntimeException ako korisnik ne postoji
+     */
+    @Override
+    public void unblockUser(Long userId) {
+<span class="fc" id="L310">        User user = userRepository.findById(userId)</span>
+<span class="pc" id="L311">            .orElseThrow(() -&gt; new RuntimeException(&quot;User not found with id: &quot; + userId));</span>
+<span class="fc" id="L312">        user.setBlocked(false);</span>
+<span class="fc" id="L313">        userRepository.save(user);</span>
+<span class="fc" id="L314">    }</span>
+    
+    /**
+     * Ažurira valutu korisnika
+     * 
+     * @param userId - ID korisnika
+     * @param currencyId - ID valute
+     * @throws RuntimeException ako korisnik ili valuta ne postoje
+     */
+    @Override
+    public void updateUserCurrency(Long userId, Long currencyId) {
+<span class="nc" id="L325">        User user = userRepository.findById(userId)</span>
+<span class="nc" id="L326">            .orElseThrow(() -&gt; new RuntimeException(&quot;User not found with id: &quot; + userId));</span>
+        
+<span class="nc" id="L328">        Currency currency = currencyRepository.findById(currencyId)</span>
+<span class="nc" id="L329">            .orElseThrow(() -&gt; new RuntimeException(&quot;Currency not found with id: &quot; + currencyId));</span>
+        
+<span class="nc" id="L331">        user.setCurrency(currency);</span>
+<span class="nc" id="L332">        userRepository.save(user);</span>
+<span class="nc" id="L333">    }</span>
+    
+    /**
+     * Konvertuje User entitet u UserDTO
+     * 
+     * DTO (Data Transfer Object) se koristi za prenos podataka između slojeva
+     * aplikacije. Ova metoda izdvaja potrebne podatke iz entiteta.
+     * 
+     * @param user - korisnički entitet
+     * @return UserDTO objekat
+     */
+    @Override
+    public UserDTO convertToDTO(User user) {
+<span class="fc" id="L346">        UserDTO dto = new UserDTO();</span>
+<span class="fc" id="L347">        dto.setId(user.getId());</span>
+<span class="fc" id="L348">        dto.setFirstName(user.getFirstName());</span>
+<span class="fc" id="L349">        dto.setLastName(user.getLastName());</span>
+<span class="fc" id="L350">        dto.setUsername(user.getUsername());</span>
+<span class="fc" id="L351">        dto.setEmail(user.getEmail());</span>
+<span class="fc" id="L352">        dto.setBirthDate(user.getBirthDate());</span>
+<span class="pc bpc" id="L353" title="1 of 2 branches missed.">        dto.setRole(user.getRole() != null ? user.getRole().toString() : null);</span>
+<span class="fc" id="L354">        dto.setImageLink(user.getImageLink());</span>
+<span class="fc" id="L355">        dto.setDateOfRegistration(user.getDateOfRegistration());</span>
+<span class="fc" id="L356">        dto.setBlocked(user.isBlocked());</span>
+        
+        // Postavlja ID valute ako korisnik ima valutu
+<span class="pc bpc" id="L359" title="1 of 2 branches missed.">        if (user.getCurrency() != null) {</span>
+<span class="nc" id="L360">            dto.setCurrencyId(user.getCurrency().getId());</span>
+        }
+        
+<span class="fc" id="L363">        return dto;</span>
+    }
+    
+    /**
+     * Konvertuje UserDTO u User entitet
+     * 
+     * @param dto - DTO objekat sa korisničkim podacima
+     * @return User entitet
+     */
+    @Override
+    public User convertToEntity(UserDTO dto) {
+<span class="fc" id="L374">        User user = new User();</span>
+<span class="fc" id="L375">        user.setId(dto.getId());</span>
+<span class="fc" id="L376">        user.setFirstName(dto.getFirstName());</span>
+<span class="fc" id="L377">        user.setLastName(dto.getLastName());</span>
+<span class="fc" id="L378">        user.setUsername(dto.getUsername());</span>
+<span class="fc" id="L379">        user.setEmail(dto.getEmail());</span>
+<span class="fc" id="L380">        user.setPassword(dto.getPassword());</span>
+<span class="fc" id="L381">        user.setBirthDate(dto.getBirthDate());</span>
+<span class="fc" id="L382">        user.setImageLink(dto.getImageLink());</span>
+<span class="fc" id="L383">        user.setBlocked(dto.isBlocked());</span>
+        
+        // Konvertuje string uloge u enum, sa fallback na USER
+<span class="pc bpc" id="L386" title="1 of 2 branches missed.">        if (dto.getRole() != null) {</span>
+            try {
+<span class="fc" id="L388">                user.setRole(com.example.WalletApp.entity.Role.valueOf(dto.getRole()));</span>
+<span class="nc" id="L389">            } catch (IllegalArgumentException e) {</span>
+                // Ako je uloga neispravna, postavlja default ulogu
+<span class="nc" id="L391">                user.setRole(com.example.WalletApp.entity.Role.USER);</span>
+<span class="pc" id="L392">            }</span>
+        } else {
+<span class="nc" id="L394">            user.setRole(com.example.WalletApp.entity.Role.USER);</span>
+        }
+        
+        // Postavlja valutu ako je prosleđen ID valute
+<span class="pc bpc" id="L398" title="1 of 2 branches missed.">        if (dto.getCurrencyId() != null) {</span>
+<span class="nc" id="L399">            Currency currency = currencyRepository.findById(dto.getCurrencyId()).orElse(null);</span>
+<span class="nc" id="L400">            user.setCurrency(currency);</span>
+        }
+        
+<span class="fc" id="L403">        return user;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

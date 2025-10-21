@@ -6,6 +6,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Security configuration - disables default security to allow session-based authentication.
+ * Spring Security is used only for BCrypt password encoding.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -15,12 +19,9 @@ public class SecurityConfig {
         http
             .csrf().disable()
             .authorizeRequests()
-                .antMatchers("/", "/health", "/h2-console/**").permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll() // Allow all requests - using HttpSession for auth
             .and()
-            .headers().frameOptions().disable() // For H2 console
-            .and()
-            .httpBasic();
+            .headers().frameOptions().disable(); // For H2 console
         
         return http.build();
     }

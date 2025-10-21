@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WalletApp</a> &gt; <a href="index.source.html" class="el_package">com.example.WalletApp.dto</a> &gt; <span class="el_source">TransactionDTO.java</span></div><h1>TransactionDTO.java</h1><pre class="source lang-java linenums">package com.example.WalletApp.dto;
+
+import javax.validation.constraints.*;
+import java.math.BigDecimal;
+import java.util.Date;
+
+public class TransactionDTO {
+    private Long id;
+    
+    @NotBlank(message = &quot;Transaction name is required&quot;)
+    @Size(min = 2, max = 100, message = &quot;Transaction name must be between 2 and 100 characters&quot;)
+    private String name;
+    
+    @NotNull(message = &quot;Amount is required&quot;)
+    @DecimalMin(value = &quot;0.01&quot;, message = &quot;Amount must be greater than 0&quot;)
+    private BigDecimal amount;
+    
+    @NotBlank(message = &quot;Transaction type is required&quot;)
+    private String type;
+    
+    @NotNull(message = &quot;Category ID is required&quot;)
+    private Long categoryId;
+    
+    private Date dateOfTransaction;
+    private boolean repeating;
+    private String frequency;
+    private Long walletId;
+    private Long userId;
+    
+    // Constructors
+<span class="fc" id="L31">    public TransactionDTO() {}</span>
+    
+    public TransactionDTO(String name, BigDecimal amount, String type, Long categoryId, 
+<span class="nc" id="L34">                         Long walletId, Long userId) {</span>
+<span class="nc" id="L35">        this.name = name;</span>
+<span class="nc" id="L36">        this.amount = amount;</span>
+<span class="nc" id="L37">        this.type = type;</span>
+<span class="nc" id="L38">        this.categoryId = categoryId;</span>
+<span class="nc" id="L39">        this.walletId = walletId;</span>
+<span class="nc" id="L40">        this.userId = userId;</span>
+<span class="nc" id="L41">    }</span>
+    
+    // Getters and Setters
+<span class="fc" id="L44">    public Long getId() { return id; }</span>
+<span class="fc" id="L45">    public void setId(Long id) { this.id = id; }</span>
+    
+<span class="fc" id="L47">    public String getName() { return name; }</span>
+<span class="fc" id="L48">    public void setName(String name) { this.name = name; }</span>
+    
+<span class="fc" id="L50">    public BigDecimal getAmount() { return amount; }</span>
+<span class="fc" id="L51">    public void setAmount(BigDecimal amount) { this.amount = amount; }</span>
+    
+<span class="fc" id="L53">    public String getType() { return type; }</span>
+<span class="fc" id="L54">    public void setType(String type) { this.type = type; }</span>
+    
+<span class="fc" id="L56">    public Long getCategoryId() { return categoryId; }</span>
+<span class="fc" id="L57">    public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }</span>
+    
+<span class="fc" id="L59">    public Date getDateOfTransaction() { return dateOfTransaction; }</span>
+<span class="fc" id="L60">    public void setDateOfTransaction(Date dateOfTransaction) { this.dateOfTransaction = dateOfTransaction; }</span>
+    
+<span class="fc" id="L62">    public boolean isRepeating() { return repeating; }</span>
+<span class="fc" id="L63">    public void setRepeating(boolean repeating) { this.repeating = repeating; }</span>
+    
+<span class="fc" id="L65">    public String getFrequency() { return frequency; }</span>
+<span class="fc" id="L66">    public void setFrequency(String frequency) { this.frequency = frequency; }</span>
+    
+<span class="fc" id="L68">    public Long getWalletId() { return walletId; }</span>
+<span class="fc" id="L69">    public void setWalletId(Long walletId) { this.walletId = walletId; }</span>
+    
+<span class="fc" id="L71">    public Long getUserId() { return userId; }</span>
+<span class="fc" id="L72">    public void setUserId(Long userId) { this.userId = userId; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>User.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WalletApp</a> &gt; <a href="index.source.html" class="el_package">com.example.WalletApp.entity</a> &gt; <span class="el_source">User.java</span></div><h1>User.java</h1><pre class="source lang-java linenums">package com.example.WalletApp.entity;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * Entitet koji predstavlja korisnika u sistemu
+ * 
+ * Ova klasa mapira tabelu 'users' u bazi podataka i sadrži sve podatke
+ * o korisniku. Koristi JPA anotacije za mapiranje u bazu podataka.
+ * 
+ * @author vuksta
+ * @version 1.0
+ */
+@Entity
+@Table(name = &quot;users&quot;)
+public class User implements Serializable {
+
+    // Primarni ključ - automatski se generiše
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    // Ime korisnika - obavezno polje
+    @Column(nullable = false)
+    private String firstName;
+
+    // Prezime korisnika - obavezno polje
+    @Column(nullable = false)
+    private String lastName;
+
+    // Korisničko ime - mora biti jedinstveno
+    @Column(unique = true, nullable = false)
+    private String username;
+
+    // Email adresa - mora biti jedinstvena
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    // Lozinka korisnika - obavezno polje
+    @Column(nullable = false)
+    private String password;
+
+    // Datum rođenja - čuva se samo datum bez vremena
+    @Column(nullable = false)
+    @Temporal(TemporalType.DATE)
+    private Date birthDate;
+
+    // Uloga korisnika - enum vrednost
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
+    // Link ka profilnoj slici korisnika
+    @Column
+    private String imageLink;
+
+    // Valuta koju korisnik koristi - veza sa Currency entitetom
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;currency_id&quot;)
+    private Currency currency;
+
+    // Datum registracije - automatski se postavlja
+    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateOfRegistration;
+
+    // Status blokiranja korisnika - default je false
+<span class="fc" id="L72">    @Column(nullable = false)</span>
+    private boolean blocked = false;
+
+    // Veze sa drugim entitetima - JPA relacije
+    
+    // Novčanici korisnika - jedan korisnik može imati više novčanika
+<span class="fc" id="L78">    @OneToMany(mappedBy = &quot;user&quot;, fetch = FetchType.LAZY, cascade = CascadeType.ALL)</span>
+    private Set&lt;Wallet&gt; wallets = new HashSet&lt;&gt;();
+
+    // Transakcije korisnika - jedan korisnik može imati više transakcija
+<span class="fc" id="L82">    @OneToMany(mappedBy = &quot;user&quot;, fetch = FetchType.LAZY, cascade = CascadeType.ALL)</span>
+    private Set&lt;Transaction&gt; transactions = new HashSet&lt;&gt;();
+
+    // Kategorije korisnika - jedan korisnik može imati više kategorija
+<span class="fc" id="L86">    @OneToMany(mappedBy = &quot;user&quot;, fetch = FetchType.LAZY, cascade = CascadeType.ALL)</span>
+    private Set&lt;Category&gt; categories = new HashSet&lt;&gt;();
+
+    // Ciljevi štednje korisnika - jedan korisnik može imati više ciljeva
+<span class="fc" id="L90">    @OneToMany(mappedBy = &quot;user&quot;, fetch = FetchType.LAZY, cascade = CascadeType.ALL)</span>
+    private Set&lt;SavingsGoal&gt; savingsGoals = new HashSet&lt;&gt;();
+
+    /**
+     * Podrazumevani konstruktor
+     * Automatski postavlja datum registracije na trenutni datum
+     */
+<span class="fc" id="L97">    public User() {</span>
+<span class="fc" id="L98">        this.dateOfRegistration = new Date();</span>
+<span class="fc" id="L99">    }</span>
+
+    /**
+     * Konstruktor sa osnovnim podacima korisnika
+     * 
+     * @param firstName - ime korisnika
+     * @param lastName - prezime korisnika
+     * @param username - korisničko ime
+     * @param email - email adresa
+     * @param password - lozinka
+     * @param birthDate - datum rođenja
+     * @param role - uloga korisnika
+     * @param currency - valuta korisnika
+     */
+    public User(String firstName, String lastName, String username, String email, String password, 
+                Date birthDate, Role role, Currency currency) {
+<span class="nc" id="L115">        this();</span>
+<span class="nc" id="L116">        this.firstName = firstName;</span>
+<span class="nc" id="L117">        this.lastName = lastName;</span>
+<span class="nc" id="L118">        this.username = username;</span>
+<span class="nc" id="L119">        this.email = email;</span>
+<span class="nc" id="L120">        this.password = password;</span>
+<span class="nc" id="L121">        this.birthDate = birthDate;</span>
+<span class="nc" id="L122">        this.role = role;</span>
+<span class="nc" id="L123">        this.currency = currency;</span>
+<span class="nc" id="L124">    }</span>
+
+    // Getters and Setters
+<span class="fc" id="L127">    public Long getId() { return id; }</span>
+<span class="fc" id="L128">    public void setId(Long id) { this.id = id; }</span>
+
+<span class="fc" id="L130">    public String getFirstName() { return firstName; }</span>
+<span class="fc" id="L131">    public void setFirstName(String firstName) { this.firstName = firstName; }</span>
+
+<span class="fc" id="L133">    public String getLastName() { return lastName; }</span>
+<span class="fc" id="L134">    public void setLastName(String lastName) { this.lastName = lastName; }</span>
+
+<span class="fc" id="L136">    public String getUsername() { return username; }</span>
+<span class="fc" id="L137">    public void setUsername(String username) { this.username = username; }</span>
+
+<span class="fc" id="L139">    public String getEmail() { return email; }</span>
+<span class="fc" id="L140">    public void setEmail(String email) { this.email = email; }</span>
+
+<span class="fc" id="L142">    public String getPassword() { return password; }</span>
+<span class="fc" id="L143">    public void setPassword(String password) { this.password = password; }</span>
+
+<span class="fc" id="L145">    public Date getBirthDate() { return birthDate; }</span>
+<span class="fc" id="L146">    public void setBirthDate(Date birthDate) { this.birthDate = birthDate; }</span>
+
+<span class="fc" id="L148">    public Role getRole() { return role; }</span>
+<span class="fc" id="L149">    public void setRole(Role role) { this.role = role; }</span>
+
+<span class="fc" id="L151">    public String getImageLink() { return imageLink; }</span>
+<span class="fc" id="L152">    public void setImageLink(String imageLink) { this.imageLink = imageLink; }</span>
+
+<span class="fc" id="L154">    public Currency getCurrency() { return currency; }</span>
+<span class="fc" id="L155">    public void setCurrency(Currency currency) { this.currency = currency; }</span>
+
+<span class="fc" id="L157">    public Date getDateOfRegistration() { return dateOfRegistration; }</span>
+<span class="nc" id="L158">    public void setDateOfRegistration(Date dateOfRegistration) { this.dateOfRegistration = dateOfRegistration; }</span>
+
+<span class="fc" id="L160">    public boolean isBlocked() { return blocked; }</span>
+<span class="fc" id="L161">    public void setBlocked(boolean blocked) { this.blocked = blocked; }</span>
+
+<span class="fc" id="L163">    public Set&lt;Wallet&gt; getWallets() { return wallets; }</span>
+<span class="nc" id="L164">    public void setWallets(Set&lt;Wallet&gt; wallets) { this.wallets = wallets; }</span>
+
+<span class="fc" id="L166">    public Set&lt;Transaction&gt; getTransactions() { return transactions; }</span>
+<span class="nc" id="L167">    public void setTransactions(Set&lt;Transaction&gt; transactions) { this.transactions = transactions; }</span>
+
+<span class="nc" id="L169">    public Set&lt;Category&gt; getCategories() { return categories; }</span>
+<span class="nc" id="L170">    public void setCategories(Set&lt;Category&gt; categories) { this.categories = categories; }</span>
+
+<span class="nc" id="L172">    public Set&lt;SavingsGoal&gt; getSavingsGoals() { return savingsGoals; }</span>
+<span class="nc" id="L173">    public void setSavingsGoals(Set&lt;SavingsGoal&gt; savingsGoals) { this.savingsGoals = savingsGoals; }</span>
+
+    // Helper methods
+    public void addWallet(Wallet wallet) {
+<span class="fc" id="L177">        wallets.add(wallet);</span>
+<span class="fc" id="L178">        wallet.setUser(this);</span>
+<span class="fc" id="L179">    }</span>
+
+    public void removeWallet(Wallet wallet) {
+<span class="nc" id="L182">        wallets.remove(wallet);</span>
+<span class="nc" id="L183">        wallet.setUser(null);</span>
+<span class="nc" id="L184">    }</span>
+
+    public void addTransaction(Transaction transaction) {
+<span class="fc" id="L187">        transactions.add(transaction);</span>
+<span class="fc" id="L188">        transaction.setUser(this);</span>
+<span class="fc" id="L189">    }</span>
+
+    public void addCategory(Category category) {
+<span class="nc" id="L192">        categories.add(category);</span>
+<span class="nc" id="L193">        category.setUser(this);</span>
+<span class="nc" id="L194">    }</span>
+
+    public void addSavingsGoal(SavingsGoal savingsGoal) {
+<span class="nc" id="L197">        savingsGoals.add(savingsGoal);</span>
+<span class="nc" id="L198">        savingsGoal.setUser(this);</span>
+<span class="nc" id="L199">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

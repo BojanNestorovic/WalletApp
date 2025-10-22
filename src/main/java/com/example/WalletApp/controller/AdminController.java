@@ -1,10 +1,13 @@
 package com.example.WalletApp.controller;
 
 import com.example.WalletApp.dto.CategoryDTO;
+import com.example.WalletApp.dto.CurrencyDTO;
+import com.example.WalletApp.dto.TransactionDTO;
 import com.example.WalletApp.dto.UserDTO;
 import com.example.WalletApp.entity.AdminNote;
 import com.example.WalletApp.service.AdminService;
 import com.example.WalletApp.service.CategoryService;
+import com.example.WalletApp.service.CurrencyService;
 import com.example.WalletApp.service.TransactionService;
 import com.example.WalletApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +43,9 @@ public class AdminController {
     
     @Autowired
     private CategoryService categoryService;
+    
+    @Autowired
+    private CurrencyService currencyService;
     
     /**
      * Check if current user is admin (helper method for authorization).
@@ -201,6 +210,26 @@ public class AdminController {
     }
     
     /**
+     * Get all categories (admin only).
+     * GET /api/admin/categories
+     */
+    @GetMapping("/categories")
+    public ResponseEntity<?> getAllCategories(HttpSession session) {
+        try {
+            if (!isAdmin(session)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("error", "Nemate pristup ovoj akciji"));
+            }
+            
+            return ResponseEntity.ok(categoryService.getAllCategories());
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
      * Create predefined category (admin only).
      * POST /api/admin/categories
      */
@@ -235,6 +264,151 @@ public class AdminController {
             }
             
             categoryService.deletePredefinedCategory(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
+     * Search and filter transactions (admin only).
+     * GET /api/admin/transactions/search?user=&category=&minAmount=&maxAmount=&startDate=&endDate=&sortBy=&sortOrder=
+     */
+    @GetMapping("/transactions/search")
+    public ResponseEntity<?> searchTransactions(@RequestParam(required = false) String user,
+                                              @RequestParam(required = false) String category,
+                                              @RequestParam(required = false) BigDecimal minAmount,
+                                              @RequestParam(required = false) BigDecimal maxAmount,
+                                              @RequestParam(required = false) String startDate,
+                                              @RequestParam(required = false) String endDate,
+                                              @RequestParam(defaultValue = "dateCreated") String sortBy,
+                                              @RequestParam(defaultValue = "desc") String sortOrder,
+                                              HttpSession session) {
+        try {
+            if (!isAdmin(session)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("error", "Nemate pristup ovoj akciji"));
+            }
+            
+            // Parse dates if provided
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date start = startDate != null && !startDate.isEmpty() ? 
+                sdf.parse(startDate) : null;
+            Date end = endDate != null && !endDate.isEmpty() ? 
+                sdf.parse(endDate) : null;
+            
+            List<TransactionDTO> results = transactionService.searchTransactions(
+                user, category, minAmount, maxAmount, start, end, sortBy, sortOrder);
+            
+            return ResponseEntity.ok(results);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
+     * Get all currencies (admin only).
+     * GET /api/admin/currencies
+     */
+    @GetMapping("/currencies")
+    public ResponseEntity<?> getAllCurrencies(HttpSession session) {
+        try {
+            if (!isAdmin(session)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("error", "Nemate pristup ovoj akciji"));
+            }
+            
+            return ResponseEntity.ok(currencyService.getAllCurrencies());
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
+     * Create new currency (admin only).
+     * POST /api/admin/currencies
+     */
+    @PostMapping("/currencies")
+    public ResponseEntity<?> createCurrency(@Valid @RequestBody CurrencyDTO currencyDTO,
+                                          HttpSession session) {
+        try {
+            if (!isAdmin(session)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("error", "Nemate pristup ovoj akciji"));
+            }
+            
+            CurrencyDTO created = currencyService.createCurrency(currencyDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
+     * Update currency (admin only).
+     * PUT /api/admin/currencies/{id}
+     */
+    @PutMapping("/currencies/{id}")
+    public ResponseEntity<?> updateCurrency(@PathVariable Long id, 
+                                          @Valid @RequestBody CurrencyDTO currencyDTO,
+                                          HttpSession session) {
+        try {
+            if (!isAdmin(session)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("error", "Nemate pristup ovoj akciji"));
+            }
+            
+            CurrencyDTO updated = currencyService.updateCurrency(id, currencyDTO);
+            return ResponseEntity.ok(updated);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
+     * Update currency from Frankfurter API (admin only).
+     * PUT /api/admin/currencies/{id}/update-from-api
+     */
+    @PutMapping("/currencies/{id}/update-from-api")
+    public ResponseEntity<?> updateCurrencyFromAPI(@PathVariable Long id, HttpSession session) {
+        try {
+            if (!isAdmin(session)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("error", "Nemate pristup ovoj akciji"));
+            }
+            
+            CurrencyDTO updated = currencyService.updateCurrencyFromAPI(id);
+            return ResponseEntity.ok(updated);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
+     * Delete currency (admin only).
+     * DELETE /api/admin/currencies/{id}
+     */
+    @DeleteMapping("/currencies/{id}")
+    public ResponseEntity<?> deleteCurrency(@PathVariable Long id, HttpSession session) {
+        try {
+            if (!isAdmin(session)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("error", "Nemate pristup ovoj akciji"));
+            }
+            
+            currencyService.deleteCurrency(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             
         } catch (Exception e) {

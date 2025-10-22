@@ -1,6 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from '../api/axios';
+import CategoryManagement from './CategoryManagement.vue';
+import CurrencyManagement from './CurrencyManagement.vue';
+import TransactionMonitoring from './TransactionMonitoring.vue';
+import { Users, CheckCircle, Wallet, BarChart2, ArrowUpRight, Zap, FileText, ArrowRight, UserCheck } from 'lucide-vue-next';
 
 const metrics = ref(null);
 const users = ref([]);
@@ -95,7 +98,7 @@ const closeNotesModal = () => {
       <!-- Metrics -->
       <div v-if="metrics" class="metrics-grid">
         <div class="metric-card">
-          <div class="metric-icon">👥</div>
+          <div class="metric-icon"><Users /></div>
           <div class="metric-info">
             <h3>Ukupno korisnika</h3>
             <p class="metric-value">{{ metrics.totalUsers }}</p>
@@ -103,7 +106,7 @@ const closeNotesModal = () => {
         </div>
 
         <div class="metric-card">
-          <div class="metric-icon">✅</div>
+          <div class="metric-icon"><UserCheck /></div>
           <div class="metric-info">
             <h3>Aktivni korisnici</h3>
             <p class="metric-value">{{ metrics.activeUsers }}</p>
@@ -111,7 +114,7 @@ const closeNotesModal = () => {
         </div>
 
         <div class="metric-card">
-          <div class="metric-icon">💰</div>
+          <div class="metric-icon"><Wallet /></div>
           <div class="metric-info">
             <h3>Ukupno stanje sistema</h3>
             <p class="metric-value">{{ parseFloat(metrics.totalSystemBalance).toFixed(2) }}</p>
@@ -119,7 +122,7 @@ const closeNotesModal = () => {
         </div>
 
         <div class="metric-card">
-          <div class="metric-icon">📊</div>
+          <div class="metric-icon"><BarChart2 /></div>
           <div class="metric-info">
             <h3>Prosečno stanje</h3>
             <p class="metric-value">{{ parseFloat(metrics.averageWalletBalance).toFixed(2) }}</p>
@@ -129,7 +132,7 @@ const closeNotesModal = () => {
 
       <!-- Top Transactions -->
       <div class="section">
-        <h2>🔝 Top 10 transakcija (30 dana)</h2>
+        <h2><ArrowUpRight :size="20" /> Top 10 transakcija (30 dana)</h2>
         <div v-if="metrics?.top10Transactions30Days?.length > 0" class="transactions-list">
           <div v-for="(tx, idx) in metrics.top10Transactions30Days" :key="idx" class="transaction-item">
             <span class="tx-rank">{{ idx + 1 }}</span>
@@ -146,7 +149,7 @@ const closeNotesModal = () => {
       </div>
 
       <div class="section">
-        <h2>⚡ Top 10 transakcija (2 minuta)</h2>
+        <h2><Zap :size="20" /> Top 10 transakcija (2 minuta)</h2>
         <div v-if="metrics?.top10Transactions2Minutes?.length > 0" class="transactions-list">
           <div v-for="(tx, idx) in metrics.top10Transactions2Minutes" :key="idx" class="transaction-item">
             <span class="tx-rank">{{ idx + 1 }}</span>
@@ -162,9 +165,13 @@ const closeNotesModal = () => {
         <p v-else class="empty">Nema transakcija u poslednja 2 minuta</p>
       </div>
 
+      <CategoryManagement />
+      <CurrencyManagement />
+      <TransactionMonitoring />
+
       <!-- Users Management -->
       <div class="section">
-        <h2>👥 Upravljanje korisnicima</h2>
+        <h2><Users :size="20" /> Upravljanje korisnicima</h2>
         <div class="users-table">
           <div class="table-header">
             <div>Ime</div>
@@ -195,7 +202,8 @@ const closeNotesModal = () => {
               >
                 {{ user.blocked ? 'Odblokiraj' : 'Blokiraj' }}
               </button>
-              <button @click="viewUserNotes(user)" class="btn-small">📝 Beleške</button>
+              <button @click="viewUserNotes(user)" class="btn-small"><FileText :size="14" /> Beleške</button>
+              <button @click="viewUserTransactions(user)" class="btn-small"><ArrowRight :size="14" /> Transakcije</button>
             </div>
           </div>
         </div>
@@ -205,7 +213,7 @@ const closeNotesModal = () => {
     <!-- User Notes Modal -->
     <div v-if="selectedUser" class="modal-overlay" @click.self="closeNotesModal">
       <div class="modal">
-        <h2>📝 Beleške o korisniku: {{ selectedUser.firstName }} {{ selectedUser.lastName }}</h2>
+        <h2><FileText :size="24" /> Beleške o korisniku: {{ selectedUser.firstName }} {{ selectedUser.lastName }}</h2>
 
         <div class="notes-list">
           <div v-if="userNotes.length === 0" class="empty">Nema beleški</div>
@@ -340,6 +348,9 @@ const closeNotesModal = () => {
   margin-bottom: 1.25rem;
   font-size: 1.125rem;
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .transactions-list {
@@ -496,6 +507,9 @@ const closeNotesModal = () => {
   font-size: 0.8125rem;
   font-weight: 600;
   transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .btn-small:hover {

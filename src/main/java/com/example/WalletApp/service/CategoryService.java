@@ -35,6 +35,15 @@ public class CategoryService {
     }
     
     /**
+     * Get all categories (admin only).
+     */
+    public List<CategoryDTO> getAllCategories() {
+        return categoryRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+    
+    /**
      * Get user's custom categories.
      */
     public List<CategoryDTO> getUserCategories(Long userId) {

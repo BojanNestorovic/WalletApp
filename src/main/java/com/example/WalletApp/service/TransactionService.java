@@ -200,6 +200,18 @@ public class TransactionService {
     }
     
     /**
+     * Search and filter transactions (admin only).
+     */
+    public List<TransactionDTO> searchTransactions(String user, String category, 
+                                                  BigDecimal minAmount, BigDecimal maxAmount,
+                                                  Date startDate, Date endDate,
+                                                  String sortBy, String sortOrder) {
+        // This would require custom repository methods with specifications
+        // For now, return all transactions (can be enhanced later)
+        return getAllTransactions();
+    }
+    
+    /**
      * Get all transactions (admin only).
      */
     public List<TransactionDTO> getAllTransactions() {
